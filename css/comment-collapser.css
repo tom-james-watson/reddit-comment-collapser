@@ -5,7 +5,7 @@
 .collapser {
 	z-index:5;
 	position: absolute;
-	background-image: url('chrome-extension://__MSG_@@extension_id__/arrow.png');
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/arrow.png');
 	background-repeat: repeat-y;
 	background-position: center;
 	opacity: .1;

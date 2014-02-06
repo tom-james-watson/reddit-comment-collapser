@@ -11,12 +11,12 @@
 	"content_scripts": [
 	{
 		"matches": ["http://www.reddit.com/*/comments/*"],
-		"css": ["comment-collapser.css"],
-		"js" : ["jquery-2.0.3.js", "jquery-ui-1.10.3.custom.min.js", "comment-collapser.js"]
+		"css": ["css/comment-collapser.css"],
+		"js" : ["js/jquery/jquery-2.0.3.js", "js/jquery/jquery-ui-1.10.3.custom.min.js", "js/comment-collapser.js"]
 	}
 	],
 	"web_accessible_resources": [
-		"jquery-2.0.3.min.map", "jquery-ui-1.10.3.custom.min.js", "jquery-2.0.3.js", "arrow.png"
+		"js/jquery/jquery-2.0.3.min.map", "js/jquery/jquery-ui-1.10.3.custom.min.js", "js/jquery/jquery-2.0.3.js", "image/arrow.png"
 	],
 	"permissions": [
 		"https://www.reddit.com/"
