@@ -1,0 +1,24 @@
+{
+	"manifest_version": 2,
+
+	"name": "Reddit Comment Collapser",
+	"description": "A more elegant solution for collapsing reddit comment trees",
+	"icons": {
+		"48" : "icon48.png",
+		"128": "icon128.png"
+	},
+	"version": "1.0",
+	"content_scripts": [
+	{
+		"matches": ["http://www.reddit.com/*/comments/*"],
+		"css": ["comment-collapser.css"],
+		"js" : ["jquery-2.0.3.js", "jquery-ui-1.10.3.custom.min.js", "comment-collapser.js"]
+	}
+	],
+	"web_accessible_resources": [
+		"jquery-2.0.3.min.map", "jquery-ui-1.10.3.custom.min.js", "jquery-2.0.3.js", "arrow.png"
+	],
+	"permissions": [
+		"https://www.reddit.com/"
+	]
+}
