@@ -5,12 +5,52 @@
 .collapser {
 	z-index:5;
 	position: absolute;
-	background-image: url('chrome-extension://__MSG_@@extension_id__/image/arrow.png');
 	background-repeat: repeat-y;
 	background-position: center;
-	opacity: .1;
+	opacity: .4;
 }
 
 .collapser:hover {
 	opacity: 1;
+    cursor: pointer;
+}
+
+.army {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/army.png');
+}
+
+.blue {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/blue.png');
+}
+
+.brown {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/brown.png');
+}
+
+.green {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/green.png');
+}
+
+.lilac {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/lilac.png');
+}
+
+.navy {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/navy.png');
+}
+
+.orange {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/orange.png');
+}
+
+.pink {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/pink.png');
+}
+
+.red {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/red.png');
+}
+
+.dark_green {
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/dark_green.png');
 }

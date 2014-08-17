@@ -1,24 +1,84 @@
 
+var colours = [
+    'blue',
+    'red',
+    'green',
+    'navy',
+    'orange',
+    'pink',
+    'brown',
+    'dark_green',
+    'lilac',
+    'army',
+];
+
+
+MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+var observer = new MutationObserver(function(mutations) {
+    var once = false;
+    $.each(mutations, function(index, mutation) {
+        if (mutation.type === 'childList') {
+            $.each(mutation.addedNodes, function(index, node) {
+                if ($(node).hasClass('comment')) {
+                    console.log(once);
+                    if (!once) {
+                        once = true;
+                        add_collapsers.bind($(node.parentNode.parentNode.parentNode))();
+                    }
+                    add_collapsers.bind($(node))();
+                }
+            });
+        }
+    });
+});
+
+observer.observe(document, {
+    subtree: true,
+    childList: true
+});
+
+
 // Add a collapser div to every non-deleted comment
-$('.comment:not(.deleted)').each(function(index) {
+$('.comment').each(add_collapsers);
+$(document).ajaxSuccess(add_collapsers);
+
+function add_collapsers() {
 
 	var collapser;
-	var midcol = $(this).children('.midcol');
+    var anchor;
+
+    if ($(this).hasClass('deleted')) {
+        anchor = $(this).children('.entry');
+    } else {
+        anchor = $(this).children('.midcol');
+    }
+
 	var num_child_comments = $(this).find('> .child .comment').length;
+    var depth = $(this).parents('.comment').length;
+    var colour = colours[depth % 10];
 
 	if (num_child_comments > 0) {
 
-		collapser = $('<div class="collapser"></div>');
+        var width;
+
+        if ($(this).hasClass('deleted')) {
+            width = '10px';
+        } else {
+            width = anchor.width();
+        }
+
+		collapser = $('<div class="collapser ' + colour + '"></div>');
 		collapser.css({
-			'height' : '-webkit-calc(100% - ' + midcol.height() + 'px)',
-			'width'  : midcol.width()
+			'height' : '-webkit-calc(100% - ' + anchor.height() + 'px)',
+			'width'  : width
 		});
 
-		midcol.append(collapser);
+		anchor.append(collapser);
 
 		collapser.click(collapse_comment);
-	};
-});
+	}
+}
 
 // Collapse a comment and all of it's children when a collapser is clicked
 function collapse_comment(event) {
@@ -38,7 +98,7 @@ function collapse_comment(event) {
 			scrollTop: collapsed.offset().top
 		}, 300);
 	}
-};
+}
 
 // Test whether a given element is visible in the viewport
 function elementInViewport(element) {
