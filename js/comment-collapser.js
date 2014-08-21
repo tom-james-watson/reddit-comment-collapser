@@ -105,7 +105,7 @@ function toggle_collapse(event) {
             comment.find('.expander').html('[+]');
             comment.removeClass('noncollapsed');
             comment.addClass('collapsed');
-        }, 300);
+        }, 250);
 
         if (!elementInViewport(comment)) {	
             $('html, body').animate({
