@@ -47,6 +47,7 @@ function add_collapsers() {
 
 	var collapser;
     var anchor;
+    var expander;
 
     if ($(this).hasClass('deleted')) {
         anchor = $(this).children('.entry');
@@ -73,50 +74,50 @@ function add_collapsers() {
 			'height' : '-webkit-calc(100% - ' + anchor.height() + 'px)',
 			'width'  : width
 		});
-
 		anchor.append(collapser);
 
-		collapser.click(collapse_comment);
+        expander = $('<a href="javascript:void(0)" class="expander">[–]</a>');
+        $(this).find('> .entry .tagline').prepend(expander);
+
+		collapser.click(toggle_collapse);
+        expander.click(toggle_collapse);
 	}
+
+    $(this).find('> .entry .tagline .expand').remove();
+
 }
 
-// Collapse a comment and all of it's children when a collapser is clicked
-function collapse_comment(event) {
+function toggle_collapse(event) {
 
-	var comment = $(this).parent().parent();
-	var collapsed = comment.find('> .entry .collapsed');
-	var noncollapsed = comment.find('> .entry .noncollapsed');
+	var comment = $($(this).parents('.comment')[0]);
 
-	noncollapsed.hide(300);
-	comment.children('.child').hide(300);
-	comment.children('.midcol').hide();
+    if (comment.hasClass('collapsed')) {
+        comment.children('.child').show(300);
+        comment.children('.midcol').show();
+        comment.removeClass('collapsed');
+        comment.addClass('noncollapsed');
+        comment.find('.expander').html('[–]');
+    }
+    else {
+        comment.children('.child').hide(300);
+        comment.children('.midcol').hide();
+        window.setTimeout(function() {
+            comment.find('.expander').html('[+]');
+            comment.removeClass('noncollapsed');
+            comment.addClass('collapsed');
+        }, 300);
 
-	collapsed.show();
-
-	if (!elementInViewport(collapsed[0])) {	
-		$('html, body').animate({
-			scrollTop: collapsed.offset().top
-		}, 300);
-	}
+        if (!elementInViewport(comment)) {	
+            $('html, body').animate({
+                scrollTop: comment.offset().top
+            }, 300);
+        }
+    }
 }
 
 // Test whether a given element is visible in the viewport
 function elementInViewport(element) {
-	var top    = element.offsetTop;
-	var left   = element.offsetLeft;
-	var width  = element.offsetWidth;
-	var height = element.offsetHeight;
+	var top    = element.offset().top;
 
-	while(element.offsetParent) {
-		element = element.offsetParent;
-		top    += element.offsetTop;
-		left   += element.offsetLeft;
-	}
-
-	return (
-		top  >= window.pageYOffset &&
-		left >= window.pageXOffset &&
-		(top  + height) <= (window.pageYOffset + window.innerHeight) &&
-		(left + width)  <= (window.pageXOffset + window.innerWidth)
-	);
+	return (top > window.pageYOffset);
 }
