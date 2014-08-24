@@ -67,9 +67,9 @@ function add_collapser(comment) {
         expander = make_expander();
         tagline = comment.find('> .entry .tagline');
         tagline.prepend(expander);
-	}
 
-    comment.find('> .entry .tagline .expand').remove();
+        comment.find('> .entry .tagline .expand').remove();
+	}
 
 }
 
