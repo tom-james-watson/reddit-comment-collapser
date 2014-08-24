@@ -78,38 +78,39 @@ function toggle_collapse(event) {
 	var comment = $($(this).parents('.comment')[0]);
 
     if (comment.hasClass('collapsed')) {
-        collapse(comment);
-    }
-    else {
         uncollapse(comment);
     }
-}
-
-
-function collapse(comment) {
-    comment.children('.child').show(300);
-    comment.children('.midcol').show();
-    comment.removeClass('collapsed');
-    comment.addClass('noncollapsed');
-    comment.find('.expander').html('[–]');
+    else {
+        collapse(comment);
+    }
 }
 
 
 function uncollapse(comment) {
-    comment.children('.child').hide(300);
-    comment.children('.midcol').hide();
+    comment.children('.child').show();
+    comment.children('.midcol').show();
+    comment.removeClass('collapsed');
+    comment.addClass('noncollapsed');
+    $(comment.find('.expander')[0]).html('[–]');
+}
 
-    window.setTimeout(function() {
-        comment.find('.expander').html('[+]');
-        comment.removeClass('noncollapsed');
-        comment.addClass('collapsed');
-    }, 250);
+
+function collapse(comment) {
 
     if (!elementInViewport(comment)) {	
         $('html, body').animate({
             scrollTop: comment.offset().top
         }, 300);
     }
+
+    comment.children('.child').hide(300);
+
+    window.setTimeout(function() {
+        comment.children('.midcol').hide();
+        $(comment.find('.expander')[0]).html('[+]');
+        comment.removeClass('noncollapsed');
+        comment.addClass('collapsed');
+    }, 200);
 }
 
 
