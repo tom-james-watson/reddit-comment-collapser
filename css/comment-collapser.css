@@ -1,3 +1,6 @@
+.thing .midcol {
+    position: static !important;
+}
 
 .expander {
     font-style: normal !important;
