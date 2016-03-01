@@ -25,6 +25,12 @@
     cursor: pointer;
 }
 
+/* Fix Reddit Enhancement Suite compatablity bug */
+.side {
+    position: relative;
+    z-index: 1;
+}
+
 .army {
 	background-image: url('chrome-extension://__MSG_@@extension_id__/image/colours/army.png');
 }
