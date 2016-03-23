@@ -1,165 +1,184 @@
+let colors = [
+  'blue',
+  'red',
+  'green',
+  'navy',
+  'orange',
+  'pink',
+  'brown',
+  'dark_green',
+  'lilac',
+  'army',
+]
 
-var colours = [
-    'blue',
-    'red',
-    'green',
-    'navy',
-    'orange',
-    'pink',
-    'brown',
-    'dark_green',
-    'lilac',
-    'army',
-];
+function make_collapser(color, width, height) {
+  let collapser = document.createElement('div')
+  collapser.className = `collapser ${color}`
+  collapser.setAttribute('style', `width: ${width}; height: calc(100% - ${height}px);`)
 
+  collapser.addEventListener('click', function(e) {
+    toggle_collapse(e)
+  })
 
-function make_collapser(colour, width, height) {
-    var collapser = $('<div class="collapser ' + colour + '"></div>');
-    collapser.click(toggle_collapse);
-    collapser.css({
-        'height': '-webkit-calc(100% - ' + height + 'px)',
-        'width': width
-    });
-    return collapser;
+  return collapser
 }
-
 
 function make_expander() {
-    var expander = $('<a href="javascript:void(0)" class="expander">[–]</a>');
-    expander.click(toggle_collapse);
-    return expander;
-}
+  let expander = document.createElement('a')
+  expander.href = 'javascript:void(0)'
+  expander.className = 'expander'
+  let expanderText = document.createTextNode('[-]')
+  expander.appendChild(expanderText)
 
+  expander.addEventListener('click', function(e) {
+    toggle_collapse(e)
+  })
+
+  return expander
+}
 
 function add_collapser(comment) {
-	var num_child_comments;
-    var anchor_ele;
-    var depth;
-    var colour;
-    var collapser;
-    var expander;
-    var tagline;
-    var width;
-    var height;
+  let depth = 0
+  let anchorEl
+  let color
+  let collapser
+  let expander
+  let tagline
+  let width
+  let height
 
-    num_child_comments = comment.find('> .child .comment').length;
+  let num_child_comments = comment.querySelectorAll(':scope > .child .comment').length
 
-	if (num_child_comments > 0) {
-        depth = comment.parents('.comment').length;
-        colour = colours[depth % 10];
+  if (num_child_comments > 0) {
+    let currentComment = comment
 
-        if (comment.hasClass('deleted')) {
-            anchor_ele = comment.children('.entry');
-        } else {
-            anchor_ele = comment.children('.midcol');
-        }
+    while (currentComment.closest('.comment') !== null) {
+      depth++
+      currentComment = currentComment.parentNode
+    }
 
-        height = anchor_ele.height();
-        if (comment.hasClass('deleted')) {
-            width = '10px';
-        } else {
-            width = anchor_ele.width();
-        }
+    color = colors[depth % 10]
 
-        collapser = make_collapser(colour, width, height);
-		anchor_ele.append(collapser);
+    if (comment.classList.contains('deleted')) anchorEl = comment.querySelector('.entry')
+    else anchorEl = comment.querySelector('.midcol')
 
-        expander = make_expander();
-        tagline = comment.find('> .entry .tagline');
-        tagline.prepend(expander);
+    if (comment.classList.contains('deleted')) width = '10px'
+    else width = `${anchorEl.offsetWidth}px`
 
-        comment.find('> .entry .tagline .expand').remove();
-	}
+    height = anchorEl.offsetHeight
 
+    collapser = make_collapser(color, width, height)
+    anchorEl.appendChild(collapser)
+
+    expander = make_expander()
+    tagline = comment.querySelector(':scope > .entry .tagline')
+    tagline.insertBefore(expander, tagline.firstChild)
+
+    let toRemoveEl = comment.querySelector(':scope > .entry .tagline .expand')
+
+    if (!toRemoveEl) return
+
+    toRemoveEl.remove()
+  }
 }
 
+function toggle_collapse(e) {
+  let comment = e.target.closest('.comment')
 
-function toggle_collapse(event) {
-	var comment = $($(this).parents('.comment')[0]);
-
-    if (comment.hasClass('collapsed')) {
-        uncollapse(comment);
-    }
-    else {
-        collapse(comment);
-    }
+  if (comment.classList.contains('collapsed')) uncollapse(comment)
+  else collapse(comment)
 }
-
 
 function uncollapse(comment) {
-    comment.children('.child').show();
-    comment.children('.midcol').show();
-    comment.removeClass('collapsed');
-    comment.addClass('noncollapsed');
-    $(comment.find('.expander')[0]).html('[–]');
+  comment.querySelector('.child').style.display = 'block'
+  comment.querySelector('.midcol').style.display = 'block'
+  comment.classList.remove('collapsed')
+  comment.classList.add('noncollapsed')
+  comment.querySelector('.expander').innerHTML = '[-]'
 }
-
 
 function collapse(comment) {
-
-    if (!elementInViewport(comment)) {	
-        $('html, body').animate({
-            scrollTop: comment.offset().top
-        }, 300);
+  if (!elementInViewport(comment)) {
+    // Padding is so that the scroll position isn't directly on the edge of the collapsed comment
+    let padding = 10
+    let distanceFromTop = 0
+    let commentContext = comment
+    if (commentContext.offsetParent) {
+      do {
+        distanceFromTop += commentContext.offsetTop
+        commentContext = commentContext.offsetParent
+      } while (commentContext)
     }
 
-    comment.children('.child').hide(300);
+    window.scrollTo(0, distanceFromTop - padding)
+  }
 
-    window.setTimeout(function() {
-        comment.children('.midcol').hide();
-        $(comment.find('.expander')[0]).html('[+]');
-        comment.removeClass('noncollapsed');
-        comment.addClass('collapsed');
-    }, 200);
+  // TODO This is where the jQuery .hide(300) animation was before
+  comment.querySelector('.child').style.display = 'none'
+
+  window.setTimeout(function() {
+    comment.querySelector('.midcol').style.display = 'none'
+    comment.querySelector('.expander').innerHTML = '[+]'
+    comment.classList.remove('noncollapsed')
+    comment.classList.add('collapsed')
+  }, 0) // TODO Previously set to 200, probably related to the (300) animation above
 }
-
 
 // Test whether a given element is visible in the viewport
-function elementInViewport(element) {
-	return (element.offset().top > window.pageYOffset);
-}
+function elementInViewport(el) {
+  let rect = el.getBoundingClientRect()
 
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+  )
+}
 
 // Watch for any new comments that are loaded and add collapsers to them too
-var observer = new WebKitMutationObserver(function(mutations) {
-    var once = false;
-    $.each(mutations, function(index, mutation) {
-        if (mutation.type === 'childList') {
-            $.each(mutation.addedNodes, function(index, node) {
-                if ($(node).hasClass('comment')) {
-                    console.log(once);
-                    if (!once) {
-                        once = true;
-                        add_collapser($(node.parentNode.parentNode.parentNode));
-                    }
-                    add_collapser($(node));
-                }
-            });
+let observer = new MutationObserver(function(mutations) {
+  let once = false
+
+  mutations.forEach(function(mutation) {
+    // Only continue if mutation is to tree of nodes
+    if (mutation.type !== 'childList') return
+
+    Array.from(mutation.addedNodes).forEach(function(node) {
+      // Only continue if node is an element
+      if (node.nodeType !== 1) return
+
+      if (node.classList.contains('comment')) {
+        if (!once) {
+          once = true
+
+          add_collapser(node.parentNode.parentNode.parentNode)
         }
-    });
-});
+
+        add_collapser(node)
+      }
+    })
+  })
+})
 
 observer.observe(document, {
-    subtree: true,
-    childList: true
-});
-
+  subtree: true,
+  childList: true
+})
 
 // Add a collapser div to every non-deleted comment
-var comments = $.makeArray($('.comment')).reverse();
+let comments = Array.from(document.querySelectorAll('.comment')).reverse()
 
 function create_collapsers() {
-    var comment = comments.pop();
-    
-    if (!comment) {
-        return false;
-    }
+  let comment = comments.pop()
 
-    add_collapser($(comment));
+  if (!comment) return false
 
-    requestAnimationFrame(function() {
-        create_collapsers();
-    });
+  add_collapser(comment)
+
+  requestAnimationFrame(function() {
+    create_collapsers()
+  })
 }
 
-create_collapsers();
+create_collapsers()

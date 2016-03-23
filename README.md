@@ -10,13 +10,16 @@ No longer get stuck in the middle of a huge comment chain - simply select the ou
 ---
 ![Screenshot2](image/screenshot1.png)
 
-## Authors
+## Major Contributors
 
-**Tom Watson**
+**Tom Watson** (original author)
 
 - <http://tomjwatson.com>
+
+**Sam A. Horvath-Hunt** (removed jQuery dependency)
+
+- <https://samhh.com>
 
 ## License
 
 Code copyright Tom Watson. Code released under [the MIT license](LICENSE.txt).
-
