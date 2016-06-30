@@ -8,8 +8,21 @@
     padding: 1px;
 }
 
+body .comment .child {
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
 .comment {
 	position: relative;
+}
+
+.comment.noncollapsed.deleted .midcol {
+    visibility: initial;
+}
+
+.comment.noncollapsed.deleted .arrow {
+    visibility: hidden;
 }
 
 .collapser {

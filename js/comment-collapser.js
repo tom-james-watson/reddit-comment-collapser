@@ -24,8 +24,13 @@ function make_collapser(colour, width, height) {
 }
 
 
-function make_expander() {
-    var expander = $('<a href="javascript:void(0)" class="expander">[–]</a>');
+function make_expander(collapsed) {
+    var expander;
+    if (collapsed) {
+        expander = $('<a href="javascript:void(0)" class="expander">[+]</a>');
+    } else {
+        expander = $('<a href="javascript:void(0)" class="expander">[–]</a>');
+    }
     expander.click(toggle_collapse);
     return expander;
 }
@@ -41,6 +46,8 @@ function add_collapser(comment) {
     var tagline;
     var width;
     var height;
+    var deleted;
+    var collapsed;
 
     num_child_comments = comment.find('> .child .comment').length;
 
@@ -48,23 +55,21 @@ function add_collapser(comment) {
         depth = comment.parents('.comment').length;
         colour = colours[depth % 10];
 
-        if (comment.hasClass('deleted')) {
-            anchor_ele = comment.children('.entry');
-        } else {
-            anchor_ele = comment.children('.midcol');
-        }
+        anchor_ele = comment.children('.midcol');
 
+        deleted = comment.hasClass('deleted');
+        collapsed = comment.hasClass('collapsed');
+
+        width = anchor_ele.width();
         height = anchor_ele.height();
-        if (comment.hasClass('deleted')) {
-            width = '10px';
-        } else {
-            width = anchor_ele.width();
+        if (deleted) {
+            height = '30';
         }
 
         collapser = make_collapser(colour, width, height);
 		anchor_ele.append(collapser);
 
-        expander = make_expander();
+        expander = make_expander(collapsed);
         tagline = comment.find('> .entry .tagline');
         tagline.prepend(expander);
 
@@ -97,7 +102,7 @@ function uncollapse(comment) {
 
 function collapse(comment) {
 
-    if (!elementInViewport(comment)) {	
+    if (!elementInViewport(comment)) {
         $('html, body').animate({
             scrollTop: comment.offset().top
         }, 300);
@@ -150,7 +155,7 @@ var comments = $.makeArray($('.comment')).reverse();
 
 function create_collapsers() {
     var comment = comments.pop();
-    
+
     if (!comment) {
         return false;
     }
