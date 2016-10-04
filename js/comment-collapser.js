@@ -11,7 +11,7 @@ const colors = [
   'army',
 ]
 
-const makeCollapser = (color, width, height) => {
+const makeCollapser = function (color, width, height) {
   let collapser = document.createElement('div')
   collapser.className = `collapser ${color}`
   collapser.setAttribute('style', `width: ${width}; height: calc(100% - ${height}px);`)
@@ -21,7 +21,7 @@ const makeCollapser = (color, width, height) => {
   return collapser
 }
 
-const makeExpander = () => {
+const makeExpander = function () {
   let expander = document.createElement('a')
   expander.href = 'javascript:void(0)'
   expander.className = 'expander'
@@ -33,7 +33,7 @@ const makeExpander = () => {
   return expander
 }
 
-const addCollapser = comment => {
+const addCollapser = function (comment) {
   const numChildComments = comment.querySelectorAll(':scope > .child .comment').length
 
   if (numChildComments === 0) return
@@ -64,14 +64,14 @@ const addCollapser = comment => {
   if (toRemoveEl) toRemoveEl.remove()
 }
 
-const toggleCollapse = e => {
+const toggleCollapse = function (e) {
   const comment = e.target.closest('.comment')
 
   if (comment.classList.contains('collapsed')) uncollapse(comment)
   else collapse(comment)
 }
 
-const uncollapse = comment => {
+const uncollapse = function (comment) {
   comment.querySelector('.child').style.display = 'block'
   comment.querySelector('.midcol').style.display = 'block'
   comment.classList.remove('collapsed')
@@ -79,7 +79,7 @@ const uncollapse = comment => {
   comment.querySelector('.expander').innerHTML = '[-]'
 }
 
-const collapse = comment => {
+const collapse = function (comment) {
   if (!elementInViewport(comment)) {
     // Padding is so that the scroll position isn't directly on the edge of the collapsed comment
     const padding = 10
@@ -105,7 +105,7 @@ const collapse = comment => {
   // This will now trigger the animated hide
   // Waiting a moment first to hopefully ensure that the above properties are
   // applied
-  setTimeout(() => {
+  setTimeout(function () {
     childToHide.style.height = '0'
 
     // Not using the transitionstart and transitionend events here as they
@@ -113,14 +113,14 @@ const collapse = comment => {
     // Chrome dev tools...
 
     // This looks better if it happens before the animation is complete
-    setTimeout(() => {
+    setTimeout(function () {
       comment.querySelector('.midcol').style.display = 'none'
       comment.querySelector('.expander').innerHTML = '[+]'
       comment.classList.remove('noncollapsed')
       comment.classList.add('collapsed')
     }, animationTimeInMs - 100)
 
-    setTimeout(() => {
+    setTimeout(function () {
       childToHide.style.display = 'none'
       childToHide.style.height = 'auto' // For future (un)collapsing of this element
     }, animationTimeInMs)
@@ -128,10 +128,12 @@ const collapse = comment => {
 }
 
 // Based on: https://github.com/alicelieutier/smoothScroll
-const smoothScroll = destination => {
-  const getComputedPosition = (start, destination, elapsed, animationTimeInMs) => {
+const smoothScroll = function (destination) {
+  const getComputedPosition = function (start, destination, elapsed, animationTimeInMs) {
     // Cubic easing algorithm
-    const easeInOutCubic = t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1
+    const easeInOutCubic = function (t) {
+      return t < .5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1
+    }
 
     // If you want linear, simply take out the easeInOutCubic call and replace it with: (elapsed / animationTimeInMs)
     return elapsed > animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / animationTimeInMs)
@@ -143,7 +145,7 @@ const smoothScroll = destination => {
 
   const requestAnimationFrame = window.requestAnimationFrame
 
-  const step = () => {
+  const step = function () {
     const elapsed = Date.now() - clock
 
     window.scroll(0, getComputedPosition(start, destination, elapsed, animationTimeInMs))
@@ -155,7 +157,7 @@ const smoothScroll = destination => {
 }
 
 // Test whether a given element is visible in the viewport
-const elementInViewport = el => {
+const elementInViewport = function (el) {
   const rect = el.getBoundingClientRect()
 
   return (
@@ -167,14 +169,14 @@ const elementInViewport = el => {
 }
 
 // Watch for any new comments that are loaded and add collapsers to them too
-let observer = new MutationObserver(mutations => {
+let observer = new MutationObserver(function (mutations) {
   let once = false
 
-  mutations.forEach(mutation => {
+  mutations.forEach(function (mutation) {
     // Only continue if mutation is to tree of nodes
     if (mutation.type !== 'childList') return
 
-    Array.from(mutation.addedNodes).forEach(node => {
+    Array.from(mutation.addedNodes).forEach(function (node) {
       // Only continue if node is an element
       if (node.nodeType !== 1 || !node.classList.contains('comment')) return
 
@@ -197,14 +199,14 @@ observer.observe(document, {
 // Add a collapser div to every non-deleted comment
 let comments = Array.from(document.querySelectorAll('.comment')).reverse()
 
-const createCollapsers = () => {
+const createCollapsers = function () {
   const comment = comments.pop()
 
   if (!comment) return false
 
   addCollapser(comment)
 
-  requestAnimationFrame(() => {
+  requestAnimationFrame(function () {
     createCollapsers()
   })
 }
