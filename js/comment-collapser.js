@@ -1,4 +1,4 @@
-let colors = [
+const colors = [
   'blue',
   'red',
   'green',
@@ -11,85 +11,71 @@ let colors = [
   'army',
 ]
 
-function make_collapser(color, width, height) {
+const makeCollapser = (color, width, height) => {
   let collapser = document.createElement('div')
   collapser.className = `collapser ${color}`
   collapser.setAttribute('style', `width: ${width}; height: calc(100% - ${height}px);`)
 
-  collapser.addEventListener('click', function(e) {
-    toggle_collapse(e)
+  collapser.addEventListener('click', e => {
+    toggleCollapse(e)
   })
 
   return collapser
 }
 
-function make_expander() {
+const makeExpander = () => {
   let expander = document.createElement('a')
   expander.href = 'javascript:void(0)'
   expander.className = 'expander'
-  let expanderText = document.createTextNode('[-]')
+  const expanderText = document.createTextNode('[-]')
   expander.appendChild(expanderText)
 
-  expander.addEventListener('click', function(e) {
-    toggle_collapse(e)
+  expander.addEventListener('click', e => {
+    toggleCollapse(e)
   })
 
   return expander
 }
 
-function add_collapser(comment) {
+const addCollapser = comment => {
+  const numChildComments = comment.querySelectorAll(':scope > .child .comment').length
+
+  if (numChildComments === 0) return
+
   let depth = 0
-  let anchorEl
-  let color
-  let collapser
-  let expander
-  let tagline
-  let width
-  let height
+  let currentComment = comment
 
-  let num_child_comments = comment.querySelectorAll(':scope > .child .comment').length
-
-  if (num_child_comments > 0) {
-    let currentComment = comment
-
-    while (currentComment.closest('.comment') !== null) {
-      depth++
-      currentComment = currentComment.parentNode
-    }
-
-    color = colors[depth % 10]
-
-    if (comment.classList.contains('deleted')) anchorEl = comment.querySelector('.entry')
-    else anchorEl = comment.querySelector('.midcol')
-
-    if (comment.classList.contains('deleted')) width = '10px'
-    else width = `${anchorEl.offsetWidth}px`
-
-    height = anchorEl.offsetHeight
-
-    collapser = make_collapser(color, width, height)
-    anchorEl.appendChild(collapser)
-
-    expander = make_expander()
-    tagline = comment.querySelector(':scope > .entry .tagline')
-    tagline.insertBefore(expander, tagline.firstChild)
-
-    let toRemoveEl = comment.querySelector(':scope > .entry .tagline .expand')
-
-    if (!toRemoveEl) return
-
-    toRemoveEl.remove()
+  while (currentComment.closest('.comment') !== null) {
+    depth++
+    currentComment = currentComment.parentNode
   }
+
+  const anchorEl = comment.classList.contains('deleted') ? comment.querySelector('.entry') : comment.querySelector('.midcol')
+
+  const color = colors[depth % 10]
+  const width = comment.classList.contains('deleted') ? '10px' : `${anchorEl.offsetWidth}px`
+  const height = anchorEl.offsetHeight
+
+  const collapser = makeCollapser(color, width, height)
+  anchorEl.appendChild(collapser)
+
+  const tagline = comment.querySelector(':scope > .entry .tagline')
+  const expander = makeExpander()
+  tagline.insertBefore(expander, tagline.firstChild)
+
+  const toRemoveEl = comment.querySelector(':scope > .entry .tagline .expand')
+
+  if (toRemoveEl) toRemoveEl.remove()
 }
 
-function toggle_collapse(e) {
-  let comment = e.target.closest('.comment')
+const toggleCollapse = e => {
+  const comment = e.target.closest('.comment')
 
   if (comment.classList.contains('collapsed')) uncollapse(comment)
   else collapse(comment)
 }
 
-function uncollapse(comment) {
+const uncollapse = comment => {
   comment.querySelector('.child').style.display = 'block'
   comment.querySelector('.midcol').style.display = 'block'
   comment.classList.remove('collapsed')
@@ -97,10 +83,10 @@ function uncollapse(comment) {
   comment.querySelector('.expander').innerHTML = '[-]'
 }
 
-function collapse(comment) {
+const collapse = comment => {
   if (!elementInViewport(comment)) {
     // Padding is so that the scroll position isn't directly on the edge of the collapsed comment
-    let padding = 10
+    const padding = 10
     let distanceFromTop = 0
     let commentContext = comment
     if (commentContext.offsetParent) {
@@ -113,20 +99,41 @@ function collapse(comment) {
     window.scrollTo(0, distanceFromTop - padding)
   }
 
-  // TODO This is where the jQuery .hide(300) animation was before
-  comment.querySelector('.child').style.display = 'none'
+  // Set the height to a fixed value in order to animate it later
+  const childToHide = comment.querySelector('.child')
+  const animationTimeInMs = 300
+  childToHide.style.overflow = 'hidden'
+  childToHide.style.transition = `height ${animationTimeInMs.toString()}ms`
+  childToHide.style.height = `${childToHide.offsetHeight}px`
 
-  window.setTimeout(function() {
-    comment.querySelector('.midcol').style.display = 'none'
-    comment.querySelector('.expander').innerHTML = '[+]'
-    comment.classList.remove('noncollapsed')
-    comment.classList.add('collapsed')
-  }, 0) // TODO Previously set to 200, probably related to the (300) animation above
+  // This will now trigger the animated hide
+  // Waiting a moment first to hopefully ensure that the above properties are
+  // applied
+  setTimeout(() => {
+    childToHide.style.height = '0'
+
+    // Not using the transitionstart and transitionend events here as they
+    // refused to work, except when changing the CSS property value in the
+    // Chrome dev tools...
+
+    // This looks better if it happens before the animation is complete
+    setTimeout(() => {
+      comment.querySelector('.midcol').style.display = 'none'
+      comment.querySelector('.expander').innerHTML = '[+]'
+      comment.classList.remove('noncollapsed')
+      comment.classList.add('collapsed')
+    }, animationTimeInMs - 100)
+
+    setTimeout(() => {
+      childToHide.style.display = 'none'
+      childToHide.style.height = 'auto' // For future (un)collapsing of this element
+    }, animationTimeInMs)
+  }, 50)
 }
 
 // Test whether a given element is visible in the viewport
-function elementInViewport(el) {
-  let rect = el.getBoundingClientRect()
+const elementInViewport = el => {
+  const rect = el.getBoundingClientRect()
 
   return (
     rect.top >= 0 &&
@@ -137,26 +144,24 @@ function elementInViewport(el) {
 }
 
 // Watch for any new comments that are loaded and add collapsers to them too
-let observer = new MutationObserver(function(mutations) {
+let observer = new MutationObserver(mutations => {
   let once = false
 
-  mutations.forEach(function(mutation) {
+  mutations.forEach(mutation => {
     // Only continue if mutation is to tree of nodes
     if (mutation.type !== 'childList') return
 
-    Array.from(mutation.addedNodes).forEach(function(node) {
+    Array.from(mutation.addedNodes).forEach(node => {
       // Only continue if node is an element
-      if (node.nodeType !== 1) return
+      if (node.nodeType !== 1 || !node.classList.contains('comment')) return
 
-      if (node.classList.contains('comment')) {
-        if (!once) {
-          once = true
+      if (!once) {
+        once = true
 
-          add_collapser(node.parentNode.parentNode.parentNode)
-        }
-
-        add_collapser(node)
+        addCollapser(node.parentNode.parentNode.parentNode)
       }
+
+      addCollapser(node)
     })
   })
 })
@@ -169,16 +174,16 @@ observer.observe(document, {
 // Add a collapser div to every non-deleted comment
 let comments = Array.from(document.querySelectorAll('.comment')).reverse()
 
-function create_collapsers() {
-  let comment = comments.pop()
+const createCollapsers = () => {
+  const comment = comments.pop()
 
   if (!comment) return false
 
-  add_collapser(comment)
+  addCollapser(comment)
 
-  requestAnimationFrame(function() {
-    create_collapsers()
+  requestAnimationFrame(() => {
+    createCollapsers()
   })
 }
 
-create_collapsers()
+createCollapsers()
