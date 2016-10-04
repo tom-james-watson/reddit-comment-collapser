@@ -96,7 +96,7 @@ const collapse = comment => {
       } while (commentContext)
     }
 
-    window.scrollTo(0, distanceFromTop - padding)
+    smoothScroll(distanceFromTop - padding)
   }
 
   // Set the height to a fixed value in order to animate it later
@@ -129,6 +129,33 @@ const collapse = comment => {
       childToHide.style.height = 'auto' // For future (un)collapsing of this element
     }, animationTimeInMs)
   }, 50)
+}
+
+// Based on: https://github.com/alicelieutier/smoothScroll
+const smoothScroll = destination => {
+  const smoothScrollPosition = (start, destination, elapsed, animationTimeInMs) => {
+    // Cubic easing algorithm
+    const easeInOutCubic = t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1
+
+    // If you want linear, simply take out the easeInOutCubic call and replace it with: (elapsed / animationTimeInMs)
+    return elapsed > animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / animationTimeInMs)
+  }
+
+  const animationTimeInMs = 500
+  const start = window.scrollY
+  const clock = Date.now()
+
+  const requestAnimationFrame = window.requestAnimationFrame
+
+  const step = () => {
+    const elapsed = Date.now() - clock
+
+    window.scroll(0, smoothScrollPosition(start, destination, elapsed, animationTimeInMs))
+
+    if (elapsed <= animationTimeInMs) requestAnimationFrame(step)
+  }
+
+  step()
 }
 
 // Test whether a given element is visible in the viewport
