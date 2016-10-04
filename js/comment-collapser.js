@@ -16,9 +16,7 @@ const makeCollapser = (color, width, height) => {
   collapser.className = `collapser ${color}`
   collapser.setAttribute('style', `width: ${width}; height: calc(100% - ${height}px);`)
 
-  collapser.addEventListener('click', e => {
-    toggleCollapse(e)
-  })
+  collapser.addEventListener('click', toggleCollapse)
 
   return collapser
 }
@@ -30,9 +28,7 @@ const makeExpander = () => {
   const expanderText = document.createTextNode('[-]')
   expander.appendChild(expanderText)
 
-  expander.addEventListener('click', e => {
-    toggleCollapse(e)
-  })
+  expander.addEventListener('click', toggleCollapse)
 
   return expander
 }
@@ -133,7 +129,7 @@ const collapse = comment => {
 
 // Based on: https://github.com/alicelieutier/smoothScroll
 const smoothScroll = destination => {
-  const smoothScrollPosition = (start, destination, elapsed, animationTimeInMs) => {
+  const getComputedPosition = (start, destination, elapsed, animationTimeInMs) => {
     // Cubic easing algorithm
     const easeInOutCubic = t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1
 
@@ -150,7 +146,7 @@ const smoothScroll = destination => {
   const step = () => {
     const elapsed = Date.now() - clock
 
-    window.scroll(0, smoothScrollPosition(start, destination, elapsed, animationTimeInMs))
+    window.scroll(0, getComputedPosition(start, destination, elapsed, animationTimeInMs))
 
     if (elapsed <= animationTimeInMs) requestAnimationFrame(step)
   }
@@ -165,8 +161,8 @@ const elementInViewport = el => {
   return (
     rect.top >= 0 &&
     rect.left >= 0 &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+    rect.right <= window.innerWidth &&
+    rect.bottom <= window.innerHeight
   )
 }
 
