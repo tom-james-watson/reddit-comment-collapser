@@ -8,8 +8,21 @@
   padding: 1px;
 }
 
+body .comment .child {
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
 .comment {
   position: relative;
+}
+
+.comment.noncollapsed.deleted .midcol {
+    visibility: initial;
+}
+
+.comment.noncollapsed.deleted .arrow {
+    visibility: hidden;
 }
 
 .collapser {
@@ -23,12 +36,6 @@
 .collapser:hover {
   opacity: 1;
   cursor: pointer;
-}
-
-/* Fix Reddit Enhancement Suite compatablity bug */
-.side {
-  position: relative;
-  z-index: 1;
 }
 
 .army {

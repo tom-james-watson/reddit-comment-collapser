@@ -9,15 +9,9 @@
 	},
 	"version": "3.0.0",
 	"content_scripts": [{
-		"matches": [
-			"https://*.reddit.com/*/comments/*"
-		],
-		"css": [
-			"css/comment-collapser.css"
-		],
-		"js" : [
-			"js/comment-collapser.js"
-		]
+		"matches": ["http://*.reddit.com/*/comments/*", "https://*.reddit.com/*/comments/*"],
+		"css": ["css/comment-collapser.css"],
+		"js": ["js/comment-collapser.js"]
 	}],
 	"web_accessible_resources": [
     "image/colours/*"

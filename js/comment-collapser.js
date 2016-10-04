@@ -14,18 +14,18 @@ const colors = [
 const makeCollapser = function (color, width, height) {
   let collapser = document.createElement('div')
   collapser.className = `collapser ${color}`
-  collapser.setAttribute('style', `width: ${width}; height: calc(100% - ${height}px);`)
+  collapser.setAttribute('style', `width: ${width}px; height: calc(100% - ${height}px);`)
 
   collapser.addEventListener('click', toggleCollapse)
 
   return collapser
 }
 
-const makeExpander = function () {
+const makeExpander = function (collapsed) {
   let expander = document.createElement('a')
   expander.href = 'javascript:void(0)'
   expander.className = 'expander'
-  const expanderText = document.createTextNode('[-]')
+  const expanderText = document.createTextNode(collapsed ? '[+]' : '[-]')
   expander.appendChild(expanderText)
 
   expander.addEventListener('click', toggleCollapse)
@@ -38,6 +38,8 @@ const addCollapser = function (comment) {
 
   if (numChildComments === 0) return
 
+  const isDeleted = comment.classList.contains('deleted')
+  const isCollapsed = comment.classList.contains('collapsed')
   let depth = 0
   let currentComment = comment
 
@@ -46,17 +48,17 @@ const addCollapser = function (comment) {
     currentComment = currentComment.parentNode
   }
 
-  const anchorEl = comment.classList.contains('deleted') ? comment.querySelector('.entry') : comment.querySelector('.midcol')
+  const anchorEl = comment.querySelector('.midcol')
 
   const color = colors[depth % 10]
-  const width = comment.classList.contains('deleted') ? '10px' : `${anchorEl.offsetWidth}px`
-  const height = anchorEl.offsetHeight
+  const width = anchorEl.offsetWidth
+  const height = isDeleted ? 30 : anchorEl.offsetHeight
 
   const collapser = makeCollapser(color, width, height)
   anchorEl.appendChild(collapser)
 
   const tagline = comment.querySelector(':scope > .entry .tagline')
-  const expander = makeExpander()
+  const expander = makeExpander(isCollapsed)
   tagline.insertBefore(expander, tagline.firstChild)
 
   const toRemoveEl = comment.querySelector(':scope > .entry .tagline .expand')
