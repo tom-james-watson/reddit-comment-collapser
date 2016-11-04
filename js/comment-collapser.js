@@ -1,5 +1,6 @@
 const settings = {
-    animationTimeInMs: 300,
+    animationTimeInMs: 250,
+    animationType: 'linear', // Can be: 'linear' or 'ease'
     colors: [
         'blue',
         'red',
@@ -144,9 +145,12 @@ const smoothScroll = function (destination) {
             return t < .5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
         };
 
-        // If you want linear, simply take out the easeInOutCubic call and
-        // replace it with: (elapsed / settings.animationTimeInMs)
-        return elapsed > settings.animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / settings.animationTimeInMs);
+        if (settings.animationType === 'ease') {
+            return elapsed > settings.animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / settings.animationTimeInMs);
+        } else {
+            // This will also be used for 'linear' option
+            return elapsed > settings.animationTimeInMs ? destination : start + (destination - start) * (elapsed / settings.animationTimeInMs);
+        }
     };
 
     const start = window.scrollY;
