@@ -1,15 +1,18 @@
-const colors = [
-    'blue',
-    'red',
-    'green',
-    'navy',
-    'orange',
-    'pink',
-    'brown',
-    'dark_green',
-    'lilac',
-    'army',
-];
+const settings = {
+    animationTimeInMs: 300,
+    colors: [
+        'blue',
+        'red',
+        'green',
+        'navy',
+        'orange',
+        'pink',
+        'brown',
+        'dark_green',
+        'lilac',
+        'army',
+    ]
+};
 
 const makeCollapser = function (color, width, height) {
     let collapser = document.createElement('div');
@@ -50,7 +53,7 @@ const addCollapser = function (comment) {
 
     const anchorEl = comment.querySelector('.midcol');
 
-    const color = colors[depth % 10];
+    const color = settings.colors[depth % 10];
     const width = anchorEl.offsetWidth;
     const height = isDeleted ? 30 : anchorEl.offsetHeight;
 
@@ -104,9 +107,8 @@ const collapse = function (commentTree) {
 
     // Set the height to a fixed value in order to animate it later
     const childToHide = commentTree.querySelector('.child');
-    const animationTimeInMs = 300;
     childToHide.style.overflow = 'hidden';
-    childToHide.style.transition = `height ${animationTimeInMs.toString()}ms`;
+    childToHide.style.transition = `height ${settings.animationTimeInMs.toString()}ms`;
     childToHide.style.height = `${childToHide.offsetHeight.toString()}px`;
 
     // This will now trigger the animated hide
@@ -125,29 +127,28 @@ const collapse = function (commentTree) {
             commentTree.querySelector('.expander').innerHTML = '[+]';
             commentTree.classList.remove('noncollapsed');
             commentTree.classList.add('collapsed');
-        }, animationTimeInMs - 100);
+        }, settings.animationTimeInMs - 100);
 
         setTimeout(function () {
             childToHide.style.display = 'none';
             childToHide.style.height = 'auto'; // For future (un)collapsing of this element
-        }, animationTimeInMs);
+        }, settings.animationTimeInMs);
     }, 50);
 };
 
 // Based on: https://github.com/alicelieutier/smoothScroll
 const smoothScroll = function (destination) {
-    const getComputedPosition = function (start, destination, elapsed, animationTimeInMs) {
+    const getComputedPosition = function (start, destination, elapsed) {
         // Cubic easing algorithm
         const easeInOutCubic = function (t) {
             return t < .5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
         };
 
         // If you want linear, simply take out the easeInOutCubic call and
-        // replace it with: (elapsed / animationTimeInMs)
-        return elapsed > animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / animationTimeInMs);
+        // replace it with: (elapsed / settings.animationTimeInMs)
+        return elapsed > settings.animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / settings.animationTimeInMs);
     };
 
-    const animationTimeInMs = 500;
     const start = window.scrollY;
     const clock = Date.now();
 
@@ -156,9 +157,9 @@ const smoothScroll = function (destination) {
     const step = function () {
         const elapsed = Date.now() - clock;
 
-        window.scroll(0, getComputedPosition(start, destination, elapsed, animationTimeInMs));
+        window.scroll(0, getComputedPosition(start, destination, elapsed));
 
-        if (elapsed <= animationTimeInMs) requestAnimationFrame(step);
+        if (elapsed <= settings.animationTimeInMs) requestAnimationFrame(step);
     };
 
     step();
