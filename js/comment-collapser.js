@@ -81,12 +81,17 @@ const uncollapse = function (comment) {
     comment.querySelector('.expander').innerHTML = '[-]';
 };
 
-const collapse = function (comment) {
-    if (!elementInViewport(comment)) {
-      // Padding is so that the scroll position isn't directly on the edge of the collapsed comment
+const collapse = function (commentTree) {
+    const parentComment = commentTree.querySelector(':scope > .entry')
+
+    // Only change scroll position if the parent comment is not entirely in
+    // viewport
+    if (!elementInViewport(parentComment)) {
+        // Padding is so that the scroll position isn't directly on the edge of
+        // the collapsed comment
         const padding = 10;
         let distanceFromTop = 0;
-        let commentContext = comment;
+        let commentContext = commentTree;
         if (commentContext.offsetParent) {
             do {
                 distanceFromTop += commentContext.offsetTop;
@@ -98,7 +103,7 @@ const collapse = function (comment) {
     }
 
     // Set the height to a fixed value in order to animate it later
-    const childToHide = comment.querySelector('.child');
+    const childToHide = commentTree.querySelector('.child');
     const animationTimeInMs = 300;
     childToHide.style.overflow = 'hidden';
     childToHide.style.transition = `height ${animationTimeInMs.toString()}ms`;
@@ -116,10 +121,10 @@ const collapse = function (comment) {
 
         // This looks better if it happens before the animation is complete
         setTimeout(function () {
-            comment.querySelector('.midcol').style.display = 'none';
-            comment.querySelector('.expander').innerHTML = '[+]';
-            comment.classList.remove('noncollapsed');
-            comment.classList.add('collapsed');
+            commentTree.querySelector('.midcol').style.display = 'none';
+            commentTree.querySelector('.expander').innerHTML = '[+]';
+            commentTree.classList.remove('noncollapsed');
+            commentTree.classList.add('collapsed');
         }, animationTimeInMs - 100);
 
         setTimeout(function () {
@@ -137,7 +142,8 @@ const smoothScroll = function (destination) {
             return t < .5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
         };
 
-        // If you want linear, simply take out the easeInOutCubic call and replace it with: (elapsed / animationTimeInMs)
+        // If you want linear, simply take out the easeInOutCubic call and
+        // replace it with: (elapsed / animationTimeInMs)
         return elapsed > animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / animationTimeInMs);
     };
 
