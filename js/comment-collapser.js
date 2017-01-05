@@ -1,146 +1,206 @@
+const settings = {
+    animationTimeInMs: 250,
+    animationType: 'linear', // Can be: 'linear' or 'ease'
+    colors: [
+        'blue',
+        'red',
+        'green',
+        'navy',
+        'orange',
+        'pink',
+        'brown',
+        'dark_green',
+        'lilac',
+        'army',
+    ]
+};
 
-var colours = [
-    'blue',
-    'red',
-    'green',
-    'navy',
-    'orange',
-    'pink',
-    'brown',
-    'dark_green',
-    'lilac',
-    'army',
-];
+const makeCollapser = function (color, width, height) {
+    let collapser = document.createElement('div');
+    collapser.className = `collapser ${color}`;
+    collapser.setAttribute('style', `width: ${width.toString()}px; height: calc(100% - ${height.toString()}px);`);
 
+    collapser.addEventListener('click', toggleCollapse);
 
-function make_collapser(colour, width, height) {
-    var collapser = $('<div class="collapser ' + colour + '"></div>');
-    collapser.click(toggle_collapse);
-    collapser.css({
-        'height': '-webkit-calc(100% - ' + height + 'px)',
-        'width': width
-    });
     return collapser;
-}
+};
 
+const makeExpander = function (collapsed) {
+    let expander = document.createElement('a');
+    expander.href = 'javascript:void(0)';
+    expander.className = 'expander';
+    const expanderText = document.createTextNode(collapsed ? '[+]' : '[-]');
+    expander.appendChild(expanderText);
 
-function make_expander(collapsed) {
-    var expander;
-    if (collapsed) {
-        expander = $('<a href="javascript:void(0)" class="expander">[+]</a>');
-    } else {
-        expander = $('<a href="javascript:void(0)" class="expander">[–]</a>');
-    }
-    expander.click(toggle_collapse);
+    expander.addEventListener('click', toggleCollapse);
+
     return expander;
-}
+};
 
+const addCollapser = function (comment) {
+    const numChildComments = comment.querySelectorAll(':scope > .child .comment').length;
 
-function add_collapser(comment) {
-	var num_child_comments;
-    var anchor_ele;
-    var depth;
-    var colour;
-    var collapser;
-    var expander;
-    var tagline;
-    var width;
-    var height;
-    var deleted;
-    var collapsed;
+    if (numChildComments === 0) return;
 
-    num_child_comments = comment.find('> .child .comment').length;
+    const isDeleted = comment.classList.contains('deleted');
+    const isCollapsed = comment.classList.contains('collapsed');
+    let depth = 0;
+    let currentComment = comment;
 
-	if (num_child_comments > 0) {
-        depth = comment.parents('.comment').length;
-        colour = colours[depth % 10];
+    while (currentComment.closest('.comment') !== null) {
+        depth++;
+        currentComment = currentComment.parentNode;
+    }
 
-        anchor_ele = comment.children('.midcol');
+    const anchorEl = comment.querySelector('.midcol');
 
-        deleted = comment.hasClass('deleted');
-        collapsed = comment.hasClass('collapsed');
+    const color = settings.colors[depth % 10];
+    const width = anchorEl.offsetWidth;
+    const height = isDeleted ? 30 : anchorEl.offsetHeight;
 
-        width = anchor_ele.width();
-        height = anchor_ele.height();
-        if (deleted) {
-            height = '30';
+    const collapser = makeCollapser(color, width, height);
+    anchorEl.appendChild(collapser);
+
+    const tagline = comment.querySelector(':scope > .entry .tagline');
+    const expander = makeExpander(isCollapsed);
+    tagline.insertBefore(expander, tagline.firstChild);
+
+    const toRemoveEl = comment.querySelector(':scope > .entry .tagline .expand');
+
+    if (toRemoveEl) toRemoveEl.remove();
+};
+
+const toggleCollapse = function (e) {
+    const comment = e.target.closest('.comment');
+
+    if (comment.classList.contains('collapsed')) uncollapse(comment);
+    else collapse(comment);
+};
+
+const uncollapse = function (comment) {
+    comment.querySelector('.child').style.display = 'block';
+    comment.querySelector('.midcol').style.display = 'block';
+    comment.classList.remove('collapsed');
+    comment.classList.add('noncollapsed');
+    comment.querySelector('.expander').innerHTML = '[-]';
+};
+
+const collapse = function (commentTree) {
+    const parentComment = commentTree.querySelector(':scope > .entry')
+
+    // Only change scroll position if the parent comment is not entirely in
+    // viewport
+    if (!elementInViewport(parentComment)) {
+        // Padding is so that the scroll position isn't directly on the edge of
+        // the collapsed comment
+        const padding = 10;
+        let distanceFromTop = 0;
+        let commentContext = commentTree;
+        if (commentContext.offsetParent) {
+            do {
+                distanceFromTop += commentContext.offsetTop;
+                commentContext = commentContext.offsetParent;
+            } while (commentContext);
         }
 
-        collapser = make_collapser(colour, width, height);
-		anchor_ele.append(collapser);
-
-        expander = make_expander(collapsed);
-        tagline = comment.find('> .entry .tagline');
-        tagline.prepend(expander);
-
-        comment.find('> .entry .tagline .expand').remove();
-	}
-
-}
-
-
-function toggle_collapse(event) {
-	var comment = $($(this).parents('.comment')[0]);
-
-    if (comment.hasClass('collapsed')) {
-        uncollapse(comment);
-    }
-    else {
-        collapse(comment);
-    }
-}
-
-
-function uncollapse(comment) {
-    comment.children('.child').show();
-    comment.children('.midcol').show();
-    comment.removeClass('collapsed');
-    comment.addClass('noncollapsed');
-    $(comment.find('.expander')[0]).html('[–]');
-}
-
-
-function collapse(comment) {
-
-    if (!elementInViewport(comment)) {
-        $('html, body').animate({
-            scrollTop: comment.offset().top
-        }, 300);
+        smoothScroll(distanceFromTop - padding);
     }
 
-    comment.children('.child').hide(300);
+    // Set the height to a fixed value in order to animate it later
+    const childToHide = commentTree.querySelector('.child');
+    childToHide.style.overflow = 'hidden';
+    childToHide.style.transition = `height ${settings.animationTimeInMs.toString()}ms`;
+    childToHide.style.height = `${childToHide.offsetHeight.toString()}px`;
 
-    window.setTimeout(function() {
-        comment.children('.midcol').hide();
-        $(comment.find('.expander')[0]).html('[+]');
-        comment.removeClass('noncollapsed');
-        comment.addClass('collapsed');
-    }, 200);
-}
+    // This will now trigger the animated hide
+    // Waiting a moment first to hopefully ensure that the above properties are
+    // applied
+    setTimeout(function () {
+        childToHide.style.height = '0';
 
+        // Not using the transitionstart and transitionend events here as they
+        // refused to work, except when changing the CSS property value in the
+        // Chrome dev tools...
+
+        // This looks better if it happens before the animation is complete
+        setTimeout(function () {
+            commentTree.querySelector('.midcol').style.display = 'none';
+            commentTree.querySelector('.expander').innerHTML = '[+]';
+            commentTree.classList.remove('noncollapsed');
+            commentTree.classList.add('collapsed');
+        }, settings.animationTimeInMs - 100);
+
+        setTimeout(function () {
+            childToHide.style.display = 'none';
+            childToHide.style.height = 'auto'; // For future (un)collapsing of this element
+        }, settings.animationTimeInMs);
+    }, 50);
+};
+
+// Based on: https://github.com/alicelieutier/smoothScroll
+const smoothScroll = function (destination) {
+    const getComputedPosition = function (start, destination, elapsed) {
+        // Cubic easing algorithm
+        const easeInOutCubic = function (t) {
+            return t < .5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
+        };
+
+        if (settings.animationType === 'ease') {
+            return elapsed > settings.animationTimeInMs ? destination : start + (destination - start) * easeInOutCubic(elapsed / settings.animationTimeInMs);
+        } else {
+            // This will also be used for 'linear' option
+            return elapsed > settings.animationTimeInMs ? destination : start + (destination - start) * (elapsed / settings.animationTimeInMs);
+        }
+    };
+
+    const start = window.scrollY;
+    const clock = Date.now();
+
+    const requestAnimationFrame = window.requestAnimationFrame;
+
+    const step = function () {
+        const elapsed = Date.now() - clock;
+
+        window.scroll(0, getComputedPosition(start, destination, elapsed));
+
+        if (elapsed <= settings.animationTimeInMs) requestAnimationFrame(step);
+    };
+
+    step();
+};
 
 // Test whether a given element is visible in the viewport
-function elementInViewport(element) {
-	return (element.offset().top > window.pageYOffset);
-}
+const elementInViewport = function (el) {
+    const rect = el.getBoundingClientRect();
 
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.right <= window.innerWidth &&
+        rect.bottom <= window.innerHeight
+    );
+};
 
 // Watch for any new comments that are loaded and add collapsers to them too
-var observer = new WebKitMutationObserver(function(mutations) {
-    var once = false;
-    $.each(mutations, function(index, mutation) {
-        if (mutation.type === 'childList') {
-            $.each(mutation.addedNodes, function(index, node) {
-                if ($(node).hasClass('comment')) {
-                    console.log(once);
-                    if (!once) {
-                        once = true;
-                        add_collapser($(node.parentNode.parentNode.parentNode));
-                    }
-                    add_collapser($(node));
-                }
-            });
-        }
+let observer = new MutationObserver(function (mutations) {
+    let once = false;
+
+    mutations.forEach(function (mutation) {
+      // Only continue if mutation is to tree of nodes
+        if (mutation.type !== 'childList') return;
+
+        Array.from(mutation.addedNodes).forEach(function (node) {
+            // Only continue if node is an element
+            if (node.nodeType !== 1 || !node.classList.contains('comment')) return;
+
+            if (!once) {
+                once = true;
+
+                addCollapser(node.parentNode.parentNode.parentNode);
+            }
+
+            addCollapser(node);
+        });
     });
 });
 
@@ -149,22 +209,19 @@ observer.observe(document, {
     childList: true
 });
 
-
 // Add a collapser div to every non-deleted comment
-var comments = $.makeArray($('.comment')).reverse();
+let comments = Array.from(document.querySelectorAll('.comment')).reverse();
 
-function create_collapsers() {
-    var comment = comments.pop();
+const createCollapsers = function () {
+    const comment = comments.pop();
 
-    if (!comment) {
-        return false;
-    }
+    if (!comment) return false;
 
-    add_collapser($(comment));
+    addCollapser(comment);
 
-    requestAnimationFrame(function() {
-        create_collapsers();
+    requestAnimationFrame(function () {
+        createCollapsers();
     });
-}
+};
 
-create_collapsers();
+createCollapsers();
