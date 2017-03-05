@@ -190,7 +190,7 @@ function smoothScroll(destination) {
         scroll(0, getComputedPosition(startScroll, destination, elapsed));
 
         if (elapsed <= settings.animationTimeInMs) {
-            requestAnimationFrame(step);
+            window.requestAnimationFrame(step);
         }
     };
 
@@ -248,7 +248,7 @@ function createCollapsers() {
 
     addCollapser(comment);
 
-    requestAnimationFrame(function () {
+    window.requestAnimationFrame(function () {
         createCollapsers();
     });
 }
