@@ -14,44 +14,46 @@ const settings = {
     ]
 };
 
-// Create URLs for local files without hardcoding chrome-extension URL scheme
-const styleEl = document.createElement("style");
-const colorsPath = chrome.runtime.getURL("image/colours");
+function injectColorsCSS() {
+    // Create URLs for local files without hardcoding chrome-extension URL scheme
+    const styleEl = document.createElement("style");
+    const colorsPath = chrome.runtime.getURL("image/colours");
 
-styleEl.textContent = `
-    .army {
-        background-image: url('${colorsPath}/army.png');
-    }
-    .blue {
-        background-image: url('${colorsPath}/blue.png');
-    }
-    .brown {
-        background-image: url('${colorsPath}/brown.png');
-    }
-    .green {
-        background-image: url('${colorsPath}/green.png');
-    }
-    .lilac {
-        background-image: url('${colorsPath}/lilac.png');
-    }
-    .navy {
-        background-image: url('${colorsPath}/navy.png');
-    }
-    .orange {
-        background-image: url('${colorsPath}/orange.png');
-    }
-    .pink {
-        background-image: url('${colorsPath}/pink.png');
-    }
-    .red {
-        background-image: url('${colorsPath}/red.png');
-    }
-    .dark_green {
-        background-image: url('${colorsPath}/dark_green.png');
-    }
-`;
+    styleEl.textContent = `
+        .army {
+            background-image: url('${colorsPath}/army.png');
+        }
+        .blue {
+            background-image: url('${colorsPath}/blue.png');
+        }
+        .brown {
+            background-image: url('${colorsPath}/brown.png');
+        }
+        .green {
+            background-image: url('${colorsPath}/green.png');
+        }
+        .lilac {
+            background-image: url('${colorsPath}/lilac.png');
+        }
+        .navy {
+            background-image: url('${colorsPath}/navy.png');
+        }
+        .orange {
+            background-image: url('${colorsPath}/orange.png');
+        }
+        .pink {
+            background-image: url('${colorsPath}/pink.png');
+        }
+        .red {
+            background-image: url('${colorsPath}/red.png');
+        }
+        .dark_green {
+            background-image: url('${colorsPath}/dark_green.png');
+        }
+    `;
 
-document.head.appendChild(styleEl);
+    document.head.appendChild(styleEl);
+}
 
 function makeCollapser(color, width, height) {
     let collapser = document.createElement('div');
@@ -140,7 +142,16 @@ function collapse(commentTree) {
     let parentComment = commentTree.querySelector(':scope > .entry')
 
     if (!elementInViewport(parentComment)) {
-        smoothScroll(parentComment.offsetParent.offsetTop - 10);
+        const padding = 10;
+        let distanceFromTop = 0;
+        let commentContext = commentTree;
+        if (commentContext.offsetParent) {
+            do {
+                distanceFromTop += commentContext.offsetTop;
+                commentContext = commentContext.offsetParent;
+            } while (commentContext);
+        }
+        smoothScroll(distanceFromTop - padding);
     }
 
     // Set the height to a fixed value in order to animate it later
@@ -253,4 +264,5 @@ function createCollapsers() {
     });
 }
 
+injectColorsCSS();
 createCollapsers();
