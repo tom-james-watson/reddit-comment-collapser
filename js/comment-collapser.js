@@ -18,7 +18,10 @@ const settings = {
 const makeCollapser = function (color, width, height) {
     let collapser = document.createElement('div');
     collapser.className = `collapser ${color}`;
-    collapser.setAttribute('style', `width: ${width.toString()}px; height: calc(100% - ${height.toString()}px);`);
+    collapser.setAttribute(
+        'style',
+        `width: ${width.toString()}px; height: calc(100% - ${height.toString()}px);`
+    );
 
     collapser.addEventListener('click', toggleCollapse);
 
@@ -29,7 +32,7 @@ const makeExpander = function (collapsed) {
     let expander = document.createElement('a');
     expander.href = 'javascript:void(0)';
     expander.className = 'expander';
-    const expanderText = document.createTextNode(collapsed ? '[+]' : '[-]');
+    let expanderText = document.createTextNode(collapsed ? '[+]' : '[-]');
     expander.appendChild(expanderText);
 
     expander.addEventListener('click', toggleCollapse);
@@ -38,12 +41,12 @@ const makeExpander = function (collapsed) {
 };
 
 const addCollapser = function (comment) {
-    const numChildComments = comment.querySelectorAll(':scope > .child .comment').length;
+    let numChildComments = comment.querySelectorAll(':scope > .child .comment').length;
 
     if (numChildComments === 0) return;
 
-    const isDeleted = comment.classList.contains('deleted');
-    const isCollapsed = comment.classList.contains('collapsed');
+    let isDeleted = comment.classList.contains('deleted');
+    let isCollapsed = comment.classList.contains('collapsed');
     let depth = 0;
     let currentComment = comment;
 
@@ -52,26 +55,26 @@ const addCollapser = function (comment) {
         currentComment = currentComment.parentNode;
     }
 
-    const anchorEl = comment.querySelector('.midcol');
+    let anchorEl = comment.querySelector('.midcol');
 
-    const color = settings.colors[depth % 10];
-    const width = anchorEl.offsetWidth;
-    const height = isDeleted ? 30 : anchorEl.offsetHeight;
+    let color = settings.colors[depth % 10];
+    let width = anchorEl.offsetWidth;
+    let height = isDeleted ? 30 : anchorEl.offsetHeight;
 
-    const collapser = makeCollapser(color, width, height);
+    let collapser = makeCollapser(color, width, height);
     anchorEl.appendChild(collapser);
 
-    const tagline = comment.querySelector(':scope > .entry .tagline');
-    const expander = makeExpander(isCollapsed);
+    let tagline = comment.querySelector(':scope > .entry .tagline');
+    let expander = makeExpander(isCollapsed);
     tagline.insertBefore(expander, tagline.firstChild);
 
-    const toRemoveEl = comment.querySelector(':scope > .entry .tagline .expand');
+    let toRemoveEl = comment.querySelector(':scope > .entry .tagline .expand');
 
     if (toRemoveEl) toRemoveEl.remove();
 };
 
 const toggleCollapse = function (e) {
-    const comment = e.target.closest('.comment');
+    let comment = e.target.closest('.comment');
 
     if (comment.classList.contains('collapsed')) uncollapse(comment);
     else collapse(comment);
@@ -86,14 +89,14 @@ const uncollapse = function (comment) {
 };
 
 const collapse = function (commentTree) {
-    const parentComment = commentTree.querySelector(':scope > .entry')
+    let parentComment = commentTree.querySelector(':scope > .entry')
 
     // Only change scroll position if the parent comment is not entirely in
     // viewport
     if (!elementInViewport(parentComment)) {
         // Padding is so that the scroll position isn't directly on the edge of
         // the collapsed comment
-        const padding = 10;
+        let padding = 10;
         let distanceFromTop = 0;
         let commentContext = commentTree;
         if (commentContext.offsetParent) {
@@ -107,7 +110,7 @@ const collapse = function (commentTree) {
     }
 
     // Set the height to a fixed value in order to animate it later
-    const childToHide = commentTree.querySelector('.child');
+    let childToHide = commentTree.querySelector('.child');
     childToHide.style.overflow = 'hidden';
     childToHide.style.transition = `height ${settings.animationTimeInMs.toString()}ms`;
     childToHide.style.height = `${childToHide.offsetHeight.toString()}px`;
@@ -139,9 +142,9 @@ const collapse = function (commentTree) {
 
 // Based on: https://github.com/alicelieutier/smoothScroll
 const smoothScroll = function (destination) {
-    const getComputedPosition = function (start, destination, elapsed) {
+    let getComputedPosition = function (start, destination, elapsed) {
         // Cubic easing algorithm
-        const easeInOutCubic = function (t) {
+        let easeInOutCubic = function (t) {
             return t < .5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
         };
 
@@ -153,13 +156,13 @@ const smoothScroll = function (destination) {
         }
     };
 
-    const start = window.scrollY;
-    const clock = Date.now();
+    let start = window.scrollY;
+    let clock = Date.now();
 
-    const requestAnimationFrame = window.requestAnimationFrame;
+    let requestAnimationFrame = window.requestAnimationFrame;
 
-    const step = function () {
-        const elapsed = Date.now() - clock;
+    let step = function () {
+        let elapsed = Date.now() - clock;
 
         window.scroll(0, getComputedPosition(start, destination, elapsed));
 
@@ -171,7 +174,7 @@ const smoothScroll = function (destination) {
 
 // Test whether a given element is visible in the viewport
 const elementInViewport = function (el) {
-    const rect = el.getBoundingClientRect();
+    let rect = el.getBoundingClientRect();
 
     return (
         rect.top >= 0 &&
@@ -213,7 +216,7 @@ observer.observe(document, {
 let comments = Array.from(document.querySelectorAll('.comment')).reverse();
 
 const createCollapsers = function () {
-    const comment = comments.pop();
+    let comment = comments.pop();
 
     if (!comment) return false;
 
