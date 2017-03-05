@@ -15,6 +15,47 @@ const settings = {
     ]
 };
 
+
+// Create URLs for local files without hardcoding chrome-extension URL scheme
+const styleEl = document.createElement("style");
+const colorsPath = chrome.runtime.getURL("image/colours");
+
+styleEl.textContent = `
+    .army {
+        background-image: url('${colorsPath}/army.png');
+    }
+    .blue {
+        background-image: url('${colorsPath}/blue.png');
+    }
+    .brown {
+        background-image: url('${colorsPath}/brown.png');
+    }
+    .green {
+        background-image: url('${colorsPath}/green.png');
+    }
+    .lilac {
+        background-image: url('${colorsPath}/lilac.png');
+    }
+    .navy {
+        background-image: url('${colorsPath}/navy.png');
+    }
+    .orange {
+        background-image: url('${colorsPath}/orange.png');
+    }
+    .pink {
+        background-image: url('${colorsPath}/pink.png');
+    }
+    .red {
+        background-image: url('${colorsPath}/red.png');
+    }
+    .dark_green {
+        background-image: url('${colorsPath}/dark_green.png');
+    }
+`;
+
+document.head.appendChild(styleEl);
+
+
 const makeCollapser = function (color, width, height) {
     let collapser = document.createElement('div');
     collapser.className = `collapser ${color}`;
