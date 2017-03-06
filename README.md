@@ -1,4 +1,10 @@
-# [Reddit Comment Collapser](https://chrome.google.com/webstore/detail/reddit-comment-collapser/njmimaecgocggclbecipdimilidimlpl)
+# Reddit Comment Collapser
+
+[Chrome extension](https://chrome.google.com/webstore/detail/reddit-comment-collapser/njmimaecgocggclbecipdimilidimlpl)
+
+[Firefox addon](https://addons.mozilla.org/en-GB/firefox/addon/reddit_comment_collapser/)
+
+---
 
 Reddit Comment Collapser is a more elegant solution for collapsing reddit comment trees.
 
