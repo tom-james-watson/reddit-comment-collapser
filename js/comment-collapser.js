@@ -140,18 +140,23 @@ function uncollapse(comment) {
 
 function collapse(commentTree) {
     let parentComment = commentTree.querySelector(':scope > .entry')
+    let rect = parentComment.getBoundingClientRect();
 
-    if (!elementInViewport(parentComment)) {
+    // If top of comment is out of viewport, scroll to it
+    if (rect.top < 0) {
         const padding = 10;
-        let distanceFromTop = 0;
-        let commentContext = commentTree;
-        if (commentContext.offsetParent) {
-            do {
-                distanceFromTop += commentContext.offsetTop;
-                commentContext = commentContext.offsetParent;
-            } while (commentContext);
+        let scrollPosition = (window.scrollY + rect.top) - padding;
+
+        try {
+            // Try and use browser's smooth scrolling if available
+            window.scroll({
+                top: scrollPosition,
+                behavior: "smooth"
+            });
+        } catch (e) {
+            // Fallback
+            smoothScroll(scrollPosition);
         }
-        smoothScroll(distanceFromTop - padding);
     }
 
     // Set the height to a fixed value in order to animate it later
@@ -181,7 +186,7 @@ function collapse(commentTree) {
 
 // Based on: https://github.com/alicelieutier/smoothScroll
 function smoothScroll(destination) {
-    let getComputedPosition = function (startScroll, destination, elapsed) {
+    function getComputedPosition (startScroll, destination, elapsed) {
         if (elapsed > settings.animationTimeInMs) {
             return destination;
         } else {
@@ -195,28 +200,15 @@ function smoothScroll(destination) {
     let startScroll = window.scrollY;
     let startTime = Date.now();
 
-    let step = function () {
+    window.requestAnimationFrame(function step () {
         let elapsed = Date.now() - startTime;
 
-        scroll(0, getComputedPosition(startScroll, destination, elapsed));
+        window.scroll(0, getComputedPosition(startScroll, destination, elapsed));
 
         if (elapsed <= settings.animationTimeInMs) {
             window.requestAnimationFrame(step);
         }
-    };
-
-    step();
-}
-
-function elementInViewport(el) {
-    let rect = el.getBoundingClientRect();
-
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.right <= window.innerWidth &&
-        rect.bottom <= window.innerHeight
-    );
+    });
 }
 
 // Watch for any new comments that are loaded and add collapsers to them too
