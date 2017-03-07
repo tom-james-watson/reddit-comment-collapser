@@ -203,7 +203,7 @@ function smoothScroll(destination) {
     window.requestAnimationFrame(function step () {
         let elapsed = Date.now() - startTime;
 
-        window.scroll(0, getComputedPosition(startScroll, destination, elapsed));
+        window.scroll(window.scrollX, getComputedPosition(startScroll, destination, elapsed));
 
         if (elapsed <= settings.animationTimeInMs) {
             window.requestAnimationFrame(step);
