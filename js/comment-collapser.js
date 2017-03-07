@@ -135,7 +135,7 @@ function uncollapse(comment) {
     comment.querySelector('.midcol').style.display = 'block';
     comment.classList.remove('collapsed');
     comment.classList.add('noncollapsed');
-    comment.querySelector('.expander').innerHTML = '[-]';
+    comment.querySelector('.expander').textContent = '[-]';
 }
 
 function collapse(commentTree) {
@@ -167,7 +167,7 @@ function collapse(commentTree) {
 
         setTimeout(function () {
             commentTree.querySelector('.midcol').style.display = 'none';
-            commentTree.querySelector('.expander').innerHTML = '[+]';
+            commentTree.querySelector('.expander').textContent = '[+]';
             commentTree.classList.remove('noncollapsed');
             commentTree.classList.add('collapsed');
         }, settings.animationTimeInMs - 100);
