@@ -37,3 +37,7 @@ body .comment .child {
     opacity: 1;
     cursor: pointer;
 }
+
+body:not(.subscriber) div.commentarea div.midcol {
+  display: block;
+}
