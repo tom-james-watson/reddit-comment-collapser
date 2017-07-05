@@ -1,68 +1,89 @@
 const settings = {
-    animationTimeInMs: 250,
-    colors: [
-        'blue',
-        'red',
-        'green',
-        'navy',
-        'orange',
-        'pink',
-        'brown',
-        'dark_green',
-        'lilac',
-        'army',
-    ]
+    animationTimeInMs: 250
 };
 
-function injectColorsCSS() {
+function injectCSS() {
     // Create URLs for local files without hardcoding chrome-extension URL scheme
     const styleEl = document.createElement("style");
     const colorsPath = chrome.runtime.getURL("image/colours");
 
+    // Find a comment to base sizes on
+    let testComment = document.querySelector(`
+            .commentarea > .sitetable > .comment:not(.deleted),
+            .commentarea > .sitetable > #listings > .comment:not(.deleted)`);
+
+    let midcol = testComment.querySelector(".midcol");
+
+    // Computed styles for exact sizes
+    let testCommentStyle = window.getComputedStyle(testComment);
+    let midcolStyle = window.getComputedStyle(midcol);
+
+    let testCommentPaddingTop = parseInt(testCommentStyle.paddingTop);
+
+    // Padding from the containing comment
+    let testCommentPaddingHeight =
+            testCommentPaddingTop +
+            parseInt(testCommentStyle.paddingBottom);
+
+    // Height and margin of the voting buttons
+    let midcolHeight =
+            parseInt(midcolStyle.marginTop) +
+            parseInt(midcolStyle.marginBottom) +
+            midcol.getBoundingClientRect().height;
+
+    let offsetHeight = midcolHeight + testCommentPaddingHeight;
+
+
     styleEl.textContent = `
-        .army {
-            background-image: url('${colorsPath}/army.png');
-        }
-        .blue {
-            background-image: url('${colorsPath}/blue.png');
-        }
-        .brown {
-            background-image: url('${colorsPath}/brown.png');
-        }
-        .green {
-            background-image: url('${colorsPath}/green.png');
-        }
-        .lilac {
-            background-image: url('${colorsPath}/lilac.png');
-        }
-        .navy {
-            background-image: url('${colorsPath}/navy.png');
-        }
-        .orange {
-            background-image: url('${colorsPath}/orange.png');
-        }
-        .pink {
-            background-image: url('${colorsPath}/pink.png');
-        }
-        .red {
+        .depth-1 {
             background-image: url('${colorsPath}/red.png');
         }
-        .dark_green {
+        .depth-2 {
+            background-image: url('${colorsPath}/orange.png');
+        }
+        .depth-3 {
             background-image: url('${colorsPath}/dark_green.png');
+        }
+        .depth-4 {
+            background-image: url('${colorsPath}/blue.png');
+        }
+        .depth-5 {
+            background-image: url('${colorsPath}/navy.png');
+        }
+        .depth-6 {
+            background-image: url('${colorsPath}/brown.png');
+        }
+        .depth-7 {
+            background-image: url('${colorsPath}/army.png');
+        }
+        .depth-8 {
+            background-image: url('${colorsPath}/green.png');
+        }
+        .depth-9 {
+            background-image: url('${colorsPath}/pink.png');
+        }
+
+        .collapser {
+            width: 15px;
+            height: calc(100% - ${offsetHeight}px);
+        }
+        .comment.deleted > .midcol > .collapser {
+            height: calc(100% - ${testCommentPaddingHeight}px);
+            top: ${testCommentPaddingTop}px;
+        }
+
+        .child {
+            overflow: hidden;
+            transition: height ${settings.animationTimeInMs}ms;
         }
     `;
 
     document.head.appendChild(styleEl);
 }
 
-function makeCollapser(color, width, height) {
+function makeCollapser(depth) {
     let collapser = document.createElement('div');
-    collapser.className = `collapser ${color}`;
-    collapser.setAttribute(
-        'style',
-        `width: ${width}px; height: calc(100% - ${height}px);`
-    );
-
+    collapser.className = `collapser depth-${depth}`;
     collapser.addEventListener('click', toggleCollapse);
 
     return collapser;
@@ -94,18 +115,20 @@ function addCollapser(comment) {
 
     let depth = 0;
     let currentComment = comment;
-    while (currentComment.closest('.comment') !== null) {
-        depth++;
-        currentComment = currentComment.parentNode;
+    while (currentComment !== null) {
+        if (currentComment.matches(".comment")) {
+            depth++;
+        }
+
+        currentComment = currentComment.parentElement;
     }
 
     let anchorEl = comment.querySelector('.midcol');
 
-    let color = settings.colors[depth % 10];
     let width = anchorEl.offsetWidth;
     let height = isDeleted ? 30 : anchorEl.offsetHeight;
 
-    let collapser = makeCollapser(color, width, height);
+    let collapser = makeCollapser(depth);
     anchorEl.appendChild(collapser);
 
     let tagline = comment.querySelector(':scope > .entry .tagline');
@@ -161,8 +184,6 @@ function collapse(commentTree) {
 
     // Set the height to a fixed value in order to animate it later
     let elementToHide = commentTree.querySelector('.child');
-    elementToHide.style.overflow = 'hidden';
-    elementToHide.style.transition = `height ${settings.animationTimeInMs}ms`;
     elementToHide.style.height = `${elementToHide.offsetHeight}px`;
 
     // Delay start of animation, otherwise the above properties may not have
@@ -256,5 +277,5 @@ function createCollapsers() {
     });
 }
 
-injectColorsCSS();
+injectCSS();
 createCollapsers();
