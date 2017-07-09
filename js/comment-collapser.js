@@ -11,8 +11,8 @@ function injectCSS() {
 
     // Find a comment to base sizes on
     let testComment = document.querySelector(`
-            .commentarea > .sitetable > .comment:not(.deleted),
-            .commentarea > .sitetable > #listings > .comment:not(.deleted)`);
+            .commentarea > .sitetable > .comment:not(.deleted):not(.collapsed),
+            .commentarea > .sitetable > #listings > .comment:not(.deleted):not(.collapsed)`);
 
     let midcol = testComment.querySelector(".midcol");
 
