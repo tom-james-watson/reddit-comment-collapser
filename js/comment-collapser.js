@@ -2,6 +2,8 @@ const settings = {
     animationTimeInMs: 250
 };
 
+let collapsedHeight;
+
 function injectCSS() {
     // Create URLs for local files without hardcoding chrome-extension URL scheme
     const styleEl = document.createElement("style");
@@ -32,6 +34,21 @@ function injectCSS() {
             midcol.getBoundingClientRect().height;
 
     let offsetHeight = midcolHeight + testCommentPaddingHeight;
+
+
+    let expand = testComment.querySelector(".tagline > .expand");
+
+    // Toggle comment to get the collapsed size
+    expand.click();
+
+    // Get size of collapsed comments
+    collapsedHeight =
+            parseInt(testCommentStyle.height) +
+            parseInt(testCommentStyle.paddingTop) +
+            parseInt(testCommentStyle.paddingBottom);
+
+    // Re-show comment without triggering a paint
+    expand.click();
 
 
     styleEl.textContent = `
@@ -72,9 +89,9 @@ function injectCSS() {
             top: ${testCommentPaddingTop}px;
         }
 
-        .child {
-            overflow: hidden;
-            transition: height ${settings.animationTimeInMs}ms;
+        .comment {
+            overflow: hidden !important;
+            transition: height ${settings.animationTimeInMs}ms ease;
         }
     `;
 
@@ -89,32 +106,13 @@ function makeCollapser(depth) {
     return collapser;
 }
 
-function makeExpander(collapsed) {
-    let expander = document.createElement('a');
-    expander.href = 'javascript:void(0)';
-    expander.className = 'expander';
-    let expanderText = document.createTextNode(collapsed ? '[+]' : '[-]');
-    expander.appendChild(expanderText);
-
-    expander.addEventListener('click', toggleCollapse);
-
-    return expander;
-};
-
 function addCollapser(comment) {
-    let numChildComments = comment.querySelectorAll(
-        ':scope > .child .comment'
-    ).length;
-
-    if (numChildComments === 0) {
-        return;
-    }
-
-    let isDeleted = comment.classList.contains('deleted');
-    let isCollapsed = comment.classList.contains('collapsed');
+    let childCount = comment.querySelectorAll(':scope > .child .comment').length;
+    if (childCount === 0) return;
 
     let depth = 0;
     let currentComment = comment;
+
     while (currentComment !== null) {
         if (currentComment.matches(".comment")) {
             depth++;
@@ -123,24 +121,10 @@ function addCollapser(comment) {
         currentComment = currentComment.parentElement;
     }
 
-    let anchorEl = comment.querySelector('.midcol');
-
-    let width = anchorEl.offsetWidth;
-    let height = isDeleted ? 30 : anchorEl.offsetHeight;
-
+    let midcol = comment.querySelector('.midcol');
     let collapser = makeCollapser(depth);
-    anchorEl.appendChild(collapser);
 
-    let tagline = comment.querySelector(':scope > .entry .tagline');
-    let expander = makeExpander(isCollapsed);
-    tagline.insertBefore(expander, tagline.firstChild);
-
-    let nativeExpander = comment.querySelector(
-        ':scope > .entry .tagline .expand'
-    );
-    if (nativeExpander) {
-        nativeExpander.remove();
-    }
+    midcol.appendChild(collapser);
 }
 
 function toggleCollapse(e) {
@@ -154,15 +138,11 @@ function toggleCollapse(e) {
 }
 
 function uncollapse(comment) {
-    comment.querySelector('.child').style.display = 'block';
-    comment.querySelector('.midcol').style.display = 'block';
-    comment.classList.remove('collapsed');
-    comment.classList.add('noncollapsed');
-    comment.querySelector('.expander').textContent = '[-]';
+    comment.querySelector(".expand").click();
 }
 
-function collapse(commentTree) {
-    let parentComment = commentTree.querySelector(':scope > .entry')
+function collapse(comment) {
+    let parentComment = comment.querySelector(':scope > .entry')
     let rect = parentComment.getBoundingClientRect();
 
     // If top of comment is out of viewport, scroll to it
@@ -183,26 +163,19 @@ function collapse(commentTree) {
     }
 
     // Set the height to a fixed value in order to animate it later
-    let elementToHide = commentTree.querySelector('.child');
-    elementToHide.style.height = `${elementToHide.offsetHeight}px`;
+    comment.style.height = window.getComputedStyle(comment).height;
 
-    // Delay start of animation, otherwise the above properties may not have
-    // been set yet
+    // Timeout of 0ms to trigger transition
     setTimeout(function() {
-        elementToHide.style.height = '0';
+        comment.style.height = `${collapsedHeight}px`;
 
-        setTimeout(function () {
-            commentTree.querySelector('.midcol').style.display = 'none';
-            commentTree.querySelector('.expander').textContent = '[+]';
-            commentTree.classList.remove('noncollapsed');
-            commentTree.classList.add('collapsed');
-        }, settings.animationTimeInMs - 100);
+        comment.addEventListener("transitionend", function onTransitionEnd() {
+            comment.querySelector(".expand").click();
 
-        setTimeout(function () {
-            elementToHide.style.display = 'none';
-            elementToHide.style.height = 'auto'; // prevent animation on uncollapse
-        }, settings.animationTimeInMs);
-    }, 50);
+            comment.style.height = "";
+            comment.removeEventListener("transitionend", onTransitionEnd);
+        });
+    }, 0);
 }
 
 // Based on: https://github.com/alicelieutier/smoothScroll
@@ -260,22 +233,14 @@ observer.observe(document, {
     childList: true
 });
 
-// Add a collapser div to every non-deleted comment
-let comments = Array.from(document.querySelectorAll('.comment')).reverse();
-
-function createCollapsers() {
-    let comment = comments.pop();
-
-    if (!comment) {
-        return false;
-    }
-
-    addCollapser(comment);
-
-    window.requestAnimationFrame(function () {
-        createCollapsers();
-    });
-}
 
 injectCSS();
-createCollapsers();
+
+// Add a collapser div to every non-deleted comment
+let comments = document.querySelectorAll('.comment');
+
+for (let comment of comments) {
+    if (!comment) break;
+
+    addCollapser(comment);
+}
