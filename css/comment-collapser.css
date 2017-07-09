@@ -2,14 +2,7 @@
     position: static !important;
 }
 
-.expander {
-    font-style: normal !important;
-    margin-right: 3px;
-    padding: 1px;
-}
-
 body .comment .child {
-    margin-top: 10px;
     margin-left: 15px;
 }
 
@@ -17,11 +10,14 @@ body .comment .child {
     position: relative;
 }
 
-.comment.noncollapsed.deleted .midcol {
+.comment.noncollapsed.deleted > .midcol {
     visibility: initial;
 }
+.comment.collapsed.deleted > .midcol {
+    visibility: hidden;
+}
 
-.comment.noncollapsed.deleted .arrow {
+.comment.noncollapsed.deleted > .midcol > .arrow {
     visibility: hidden;
 }
 
