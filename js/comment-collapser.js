@@ -215,7 +215,7 @@ let observer = new MutationObserver(function (mutations) {
 
         Array.from(mutation.addedNodes).forEach(function (node) {
             // Only continue if node is an element
-            if (node.nodeType !== 1 || !node.classList.contains('comment')) return;
+            if (node.nodeType !== Node.ELEMENT_NODE || !node.classList.contains('comment')) return;
 
             if (!once) {
                 once = true;
