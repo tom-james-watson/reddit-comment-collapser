@@ -7,8 +7,8 @@ function injectCSS() {
     styleEl.textContent = `
         .comment,
         .res-commentBoxes .comment,
-        .res.res-commentBoxes .commentarea .sitetable > .comment,
-        .res.res-commentBoxes .commentarea .sitetable > .comment .comment,
+        :root.res.res-commentBoxes .commentarea .sitetable > .comment,
+        :root.res.res-commentBoxes .commentarea .sitetable > .comment .comment,
         .res .commentarea .thing {
             margin-left: initial !important;
             padding-left: 20px !important;
@@ -28,7 +28,7 @@ function injectCSS() {
             padding-left: initial !important;
         }
 
-        .expand {
+        :root .comment .expand {
             all: initial !important;
             background-color: rgba(0, 0, 0, 0.1) !important;
             background-position: center 5px !important;
@@ -45,9 +45,10 @@ function injectCSS() {
             top: 0 !important;
             width: 15px !important;
             text-align: center !important;
+            transition: initial !important;
         }
 
-        .expand:hover {
+        :root .comment .expand:hover {
             background-color: rgba(0, 0, 0, 0.25) !important;
             color: white !important;
             text-decoration: initial !important;
@@ -61,16 +62,16 @@ function injectCSS() {
             background-color: rgba(255, 255, 255, 0.25) !important;
         }
 
-        .expand {
+        :root .comment .expand {
             background-image: url("${imagePath}/collapse.png") !important;
         }
-        .res-nightmode .expand {
+        :root.res-nightmode .comment .expand {
             background-image: url("${imagePath}/collapse-dark.png") !important;
         }
-        .comment.collapsed .expand {
+        :root .comment.collapsed .expand {
             background-image: url("${imagePath}/expand.png") !important;
         }
-        .res-nightmode .comment.collapsed .expand {
+        :root.res-nightmode .comment.collapsed .expand {
             background-image: url("${imagePath}/expand-dark.png") !important;
         }
 
