@@ -2,45 +2,25 @@ function injectCSS() {
   const styleEl = document.createElement("style");
 
   styleEl.textContent = `
-    :root .comment,
-    :root .comment .comment,
-    :root .comment .comment .comment,
-    :root .comment .comment .comment .comment,
-    :root .comment .comment .comment .comment .comment,
-    :root .comment .comment .comment .comment .comment .comment,
-    :root .comment .comment .comment .comment .comment .comment .comment,
-    :root .comment .comment .comment .comment .comment .comment .comment .comment,
-    :root .comment .comment .comment .comment .comment .comment .comment .comment .comment,
-    :root.res.res-commentBoxes .comment,
-    :root.res.res-commentBoxes .comment .comment,
-    :root.res.res-commentBoxes .comment .comment .comment,
-    :root.res.res-commentBoxes .comment .comment .comment .comment,
-    :root.res.res-commentBoxes .comment .comment .comment .comment .comment,
-    :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment,
-    :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment .comment,
-    :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment .comment .comment,
-    :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment .comment .comment .comment,
-    :root.res.res.res-commentBoxes .commentarea .sitetable > .comment,
-    :root.res.res.res-commentBoxes .commentarea .sitetable > .comment .comment,
-    .res .commentarea .thing {
+    :root body div.sitetable div.comment {
       padding-left: 20px !important;
       position: relative !important;
     }
 
-    .comment .midcol {
+    :root body div.sitetable div.comment div.midcol {
       left: initial !important;
     }
 
-    .comment .midcol,
-    .comment .arrow,
-    .comment .entry,
-    .comment .tagline,
-    .comment .child {
+    :root body div.sitetable div.comment .midcol,
+    :root body div.sitetable div.comment .arrow,
+    :root body div.sitetable div.comment .entry,
+    :root body div.sitetable div.comment .tagline,
+    :root body div.sitetable div.comment .child {
       margin-left: initial !important;
       padding-left: initial !important;
     }
 
-    :root .comment .expand {
+    :root body div.sitetable div.comment .expand {
       all: initial !important;
       background-color: rgba(255, 255, 0, 0.05) !important;
       border: none !important;
@@ -58,7 +38,7 @@ function injectCSS() {
       transition: initial !important;
     }
 
-    :root .comment .expand:hover {
+    :root body div.sitetable div.comment .expand:hover {
       background-color: rgba(255, 255, 0, 0.3) !important;
       text-decoration: initial !important;
     }
