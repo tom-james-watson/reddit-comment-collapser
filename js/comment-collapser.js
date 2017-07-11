@@ -1,181 +1,90 @@
-const settings = {
-    animationTimeInMs: 250
-};
-
-let collapsedHeight;
+"use strict";
 
 function injectCSS() {
-    // Create URLs for local files without hardcoding chrome-extension URL scheme
     const styleEl = document.createElement("style");
-    const colorsPath = chrome.runtime.getURL("image/colours");
-
-    // Find a comment to base sizes on
-    let testComment = document.querySelector(`
-            .commentarea > .sitetable > .comment:not(.deleted):not(.collapsed),
-            .commentarea > .sitetable > #listings > .comment:not(.deleted):not(.collapsed)`);
-
-    let midcol = testComment.querySelector(".midcol");
-
-    // Computed styles for exact sizes
-    let testCommentStyle = window.getComputedStyle(testComment);
-    let midcolStyle = window.getComputedStyle(midcol);
-
-    let testCommentPaddingTop = parseInt(testCommentStyle.paddingTop);
-
-    // Padding from the containing comment
-    let testCommentPaddingHeight =
-            testCommentPaddingTop +
-            parseInt(testCommentStyle.paddingBottom);
-
-    // Height and margin of the voting buttons
-    let midcolHeight =
-            parseInt(midcolStyle.marginTop) +
-            parseInt(midcolStyle.marginBottom) +
-            midcol.getBoundingClientRect().height;
-
-    let offsetHeight = midcolHeight + testCommentPaddingHeight;
-
-
-    let expand = testComment.querySelector(".tagline > .expand");
-
-    // Toggle comment to get the collapsed size
-    expand.click();
-
-    // Get size of collapsed comments
-    collapsedHeight =
-            parseInt(testCommentStyle.height) +
-            parseInt(testCommentStyle.paddingTop) +
-            parseInt(testCommentStyle.paddingBottom);
-
-    // Re-show comment without triggering a paint
-    expand.click();
-
+    const imagePath = chrome.runtime.getURL("image");  
 
     styleEl.textContent = `
-        .depth-1 {
-            background-image: url('${colorsPath}/red.png');
-        }
-        .depth-2 {
-            background-image: url('${colorsPath}/orange.png');
-        }
-        .depth-3 {
-            background-image: url('${colorsPath}/dark_green.png');
-        }
-        .depth-4 {
-            background-image: url('${colorsPath}/blue.png');
-        }
-        .depth-5 {
-            background-image: url('${colorsPath}/navy.png');
-        }
-        .depth-6 {
-            background-image: url('${colorsPath}/brown.png');
-        }
-        .depth-7 {
-            background-image: url('${colorsPath}/army.png');
-        }
-        .depth-8 {
-            background-image: url('${colorsPath}/green.png');
-        }
-        .depth-9 {
-            background-image: url('${colorsPath}/pink.png');
+        .comment,
+        .res-commentBoxes .comment,
+        .res.res-commentBoxes .commentarea .sitetable > .comment,
+        .res.res-commentBoxes .commentarea .sitetable > .comment .comment,
+        .res .commentarea .thing {
+            margin-left: initial !important;
+            padding-left: 20px !important;
+            position: relative !important;
         }
 
-        .collapser {
-            width: 15px;
-            height: calc(100% - ${offsetHeight}px);
-        }
-        .comment.deleted > .midcol > .collapser {
-            height: calc(100% - ${testCommentPaddingHeight}px);
-            top: ${testCommentPaddingTop}px;
+        .comment .midcol {
+            left: initial !important;
         }
 
-        .comment {
-            overflow: hidden !important;
-            transition: height ${settings.animationTimeInMs}ms ease;
+        .comment .midcol,
+        .comment .arrow,
+        .comment .entry,
+        .comment .tagline,
+        .comment .child {
+            margin-left: initial !important;
+            padding-left: initial !important;
+        }
+
+        .expand {
+            all: initial !important;
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            background-position: center 5px !important;
+            background-repeat: no-repeat !important;
+            border: initial !important;
+            border-radius: initial !important;
+            color: black !important;
+            height: 100% !important;
+            left: 0 !important;
+            font-size: 0 !important;
+            margin: initial !important;
+            padding: initial !important;
+            position: absolute !important;
+            top: 0 !important;
+            width: 15px !important;
+            text-align: center !important;
+        }
+
+        .expand:hover {
+            background-color: rgba(0, 0, 0, 0.25) !important;
+            color: white !important;
+            text-decoration: initial !important;
+        }
+
+        .res-nightmode .expand {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
+        .res-nightmode .expand:hover {
+            background-color: rgba(255, 255, 255, 0.25) !important;
+        }
+
+        .expand {
+            background-image: url("${imagePath}/collapse.png") !important;
+        }
+        .res-nightmode .expand {
+            background-image: url("${imagePath}/collapse-dark.png") !important;
+        }
+        .comment.collapsed .expand {
+            background-image: url("${imagePath}/expand.png") !important;
+        }
+        .res-nightmode .comment.collapsed .expand {
+            background-image: url("${imagePath}/expand-dark.png") !important;
+        }
+
+        .comment.collapsed > .entry > .tagline > .expand {
+            background-position-y: center !important;
+        }
+
+        .expand::before,
+        .expand::after {
+            content: initial !important;
         }
     `;
 
-    document.head.appendChild(styleEl);
-}
-
-function makeCollapser(depth) {
-    let collapser = document.createElement('div');
-    collapser.className = `collapser depth-${depth}`;
-    collapser.addEventListener('click', toggleCollapse);
-
-    return collapser;
-}
-
-function addCollapser(comment) {
-    let childCount = comment.querySelectorAll(':scope > .child .comment').length;
-    if (childCount === 0) return;
-
-    let depth = 0;
-    let currentComment = comment;
-
-    while (currentComment !== null) {
-        if (currentComment.matches(".comment")) {
-            depth++;
-        }
-
-        currentComment = currentComment.parentElement;
-    }
-
-    let midcol = comment.querySelector('.midcol');
-    let collapser = makeCollapser(depth);
-
-    midcol.appendChild(collapser);
-}
-
-function toggleCollapse(e) {
-    let comment = e.target.closest('.comment');
-
-    if (comment.classList.contains('collapsed')) {
-        uncollapse(comment);
-    } else {
-        collapse(comment);
-    }
-}
-
-function uncollapse(comment) {
-    comment.querySelector(".expand").click();
-}
-
-function collapse(comment) {
-    let parentComment = comment.querySelector(':scope > .entry')
-    let rect = parentComment.getBoundingClientRect();
-
-    // If top of comment is out of viewport, scroll to it
-    if (rect.top < 0) {
-        const padding = 10;
-        let scrollPosition = (window.scrollY + rect.top) - padding;
-
-        try {
-            // Try and use browser's smooth scrolling if available
-            window.scroll({
-                top: scrollPosition,
-                behavior: "smooth"
-            });
-        } catch (e) {
-            // Fallback
-            smoothScroll(scrollPosition);
-        }
-    }
-
-    // Set the height to a fixed value in order to animate it later
-    comment.style.height = window.getComputedStyle(comment).height;
-
-    // Timeout of 0ms to trigger transition
-    setTimeout(function() {
-        comment.style.height = `${collapsedHeight}px`;
-
-        comment.addEventListener("transitionend", function onTransitionEnd() {
-            comment.querySelector(".expand").click();
-
-            comment.style.height = "";
-            comment.removeEventListener("transitionend", onTransitionEnd);
-        });
-    }, 0);
+    document.documentElement.appendChild(styleEl);
 }
 
 // Based on: https://github.com/alicelieutier/smoothScroll
@@ -205,42 +114,30 @@ function smoothScroll(destination) {
     });
 }
 
-// Watch for any new comments that are loaded and add collapsers to them too
-let observer = new MutationObserver(function (mutations) {
-    let once = false;
-
-    mutations.forEach(function (mutation) {
-      // Only continue if mutation is to tree of nodes
-        if (mutation.type !== 'childList') return;
-
-        Array.from(mutation.addedNodes).forEach(function (node) {
-            // Only continue if node is an element
-            if (node.nodeType !== Node.ELEMENT_NODE || !node.classList.contains('comment')) return;
-
-            if (!once) {
-                once = true;
-
-                addCollapser(node.parentNode.parentNode.parentNode);
-            }
-
-            addCollapser(node);
-        });
-    });
-});
-
-observer.observe(document, {
-    subtree: true,
-    childList: true
-});
-
 
 injectCSS();
 
-// Add a collapser div to every non-deleted comment
-let comments = document.querySelectorAll('.comment');
+window.addEventListener("click", function (ev) {
+    // Only trigger for expando clicks
+    if (!ev.target.matches(".expand")) return;
 
-for (let comment of comments) {
-    if (!comment) break;
+    let comment = ev.target.closest(".comment");
+    let rect = comment.getBoundingClientRect();
 
-    addCollapser(comment);
-}
+    // If top of comment is out of viewport, scroll to it
+    if (rect.top < 0) {
+        const padding = 10;
+        let scrollPosition = (window.scrollY + rect.top) - padding;
+
+        try {
+            // Try and use browser's smooth scrolling if available
+            window.scroll({
+                top: scrollPosition,
+                behavior: "smooth"
+            });
+        } catch (e) {
+            // Fallback
+            smoothScroll(scrollPosition);
+        }
+    }
+});
