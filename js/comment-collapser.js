@@ -3,12 +3,22 @@ function injectCSS() {
 
   styleEl.textContent = `
     :root body div.sitetable div.comment {
-      padding-left: 20px !important;
+      padding-left: 5px !important;
       position: relative !important;
+    }
+
+    :root body div.sitetable div.comment .comment {
+      margin-left: 25px !important;
     }
 
     :root body div.sitetable div.comment div.midcol {
       left: initial !important;
+    }
+
+    :root body div.sitetable .midcol {
+      position: relative;
+      z-index: 1;
+      padding: 5px;
     }
 
     :root body div.sitetable div.comment .midcol,
@@ -28,14 +38,22 @@ function injectCSS() {
       border-radius: initial !important;
       height: 100% !important;
       left: 0 !important;
-      font-size: 10px !important;
+      font-size: 0px !important;
       margin: initial !important;
       padding: initial !important;
       position: absolute !important;
       top: 0 !important;
-      width: 15px !important;
+      width: 20px !important;
       text-align: center !important;
       transition: initial !important;
+    }
+
+    :root body div.sitetable div.comment morecomments {
+      margin-left: 20px;
+    }
+
+    :root body div.sitetable div.comment.collapsed .expand {
+      font-size: 10px !important;
     }
 
     :root body div.sitetable div.comment .expand:hover {
