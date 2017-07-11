@@ -23,7 +23,6 @@ function injectCSS() {
     :root.res.res.res-commentBoxes .commentarea .sitetable > .comment,
     :root.res.res.res-commentBoxes .commentarea .sitetable > .comment .comment,
     .res .commentarea .thing {
-      margin-left: initial !important;
       padding-left: 20px !important;
       position: relative !important;
     }
