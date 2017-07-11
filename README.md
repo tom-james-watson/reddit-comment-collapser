@@ -22,7 +22,7 @@ No longer get stuck in the middle of a huge comment chain - simply select the ou
 
 - <http://tomjwatson.com>
 
-**Sam A. Horvath-Hunt** (removed jQuery dependency)
+**Sam A. Horvath-Hunt**
 
 - <https://samhh.com>
 
