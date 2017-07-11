@@ -30,6 +30,10 @@ function injectCSS() {
       padding-left: initial !important;
     }
 
+    :root body div.sitetable {
+      position: initial;
+    }
+
     :root body div.sitetable div.comment .expand {
       all: initial !important;
       background-color: rgba(255, 255, 0, 0.05) !important;
