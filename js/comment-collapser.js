@@ -5,10 +5,26 @@ function injectCSS() {
     const imagePath = chrome.runtime.getURL("image");  
 
     styleEl.textContent = `
-        .comment,
-        .res-commentBoxes .comment,
-        :root.res.res-commentBoxes .commentarea .sitetable > .comment,
-        :root.res.res-commentBoxes .commentarea .sitetable > .comment .comment,
+        :root .comment,
+        :root .comment .comment,
+        :root .comment .comment .comment,
+        :root .comment .comment .comment .comment,
+        :root .comment .comment .comment .comment .comment,
+        :root .comment .comment .comment .comment .comment .comment,
+        :root .comment .comment .comment .comment .comment .comment .comment,
+        :root .comment .comment .comment .comment .comment .comment .comment .comment,
+        :root .comment .comment .comment .comment .comment .comment .comment .comment .comment,
+        :root.res.res-commentBoxes .comment,
+        :root.res.res-commentBoxes .comment .comment,
+        :root.res.res-commentBoxes .comment .comment .comment,
+        :root.res.res-commentBoxes .comment .comment .comment .comment,
+        :root.res.res-commentBoxes .comment .comment .comment .comment .comment,
+        :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment,
+        :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment .comment,
+        :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment .comment .comment,
+        :root.res.res-commentBoxes .comment .comment .comment .comment .comment .comment .comment .comment .comment,
+        :root.res.res.res-commentBoxes .commentarea .sitetable > .comment,
+        :root.res.res.res-commentBoxes .commentarea .sitetable > .comment .comment,
         .res .commentarea .thing {
             margin-left: initial !important;
             padding-left: 20px !important;
