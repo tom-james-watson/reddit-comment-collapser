@@ -7,12 +7,20 @@
         "48" : "image/icon48.png",
         "128": "image/icon128.png"
     },
-    "version": "4.1.0",
+    "version": "4.0.1",
     "content_scripts": [{
-        "matches": ["http://*.reddit.com/*/comments/*", "https://*.reddit.com/*/comments/*"],
-        "css": ["css/comment-collapser.css"],
-        "js": ["js/comment-collapser.js"]
+        "matches": [
+            "http://*.reddit.com/*/comments/*",
+            "https://*.reddit.com/*/comments/*"
+        ],
+        "js": ["js/comment-collapser.js"],
+        "run_at": "document_start"
     }],
-    "web_accessible_resources": ["image/colours/*"],
+    "web_accessible_resources": [
+        "image/collapse.png",
+        "image/collapse-dark.png",
+        "image/expand.png",
+        "image/expand-dark.png"
+    ],
     "permissions": ["https://*.reddit.com/"]
 }
