@@ -106,13 +106,15 @@ function injectCSS() {
 
 // Based on: https://github.com/alicelieutier/smoothScroll
 function smoothScroll(destination) {
+    let duration = 250;
+
     function getComputedPosition (startScroll, destination, elapsed) {
-        if (elapsed > settings.animationTimeInMs) {
+        if (elapsed > duration) {
             return destination;
         } else {
             return (
                 startScroll + (destination - startScroll) *
-                (elapsed / settings.animationTimeInMs)
+                (elapsed / duration)
             );
         }
     };
@@ -125,7 +127,7 @@ function smoothScroll(destination) {
 
         window.scroll(window.scrollX, getComputedPosition(startScroll, destination, elapsed));
 
-        if (elapsed <= settings.animationTimeInMs) {
+        if (elapsed <= duration) {
             window.requestAnimationFrame(step);
         }
     });
