@@ -13,6 +13,7 @@
             "http://*.reddit.com/*/comments/*",
             "https://*.reddit.com/*/comments/*"
         ],
+        "css": ["css/comment-collapser.css"],
         "js": ["js/comment-collapser.js"],
         "run_at": "document_start"
     }],
