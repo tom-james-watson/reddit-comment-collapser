@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reddit Comment Collapser Options</title>
+    <style>
+      body: { padding: 10px; }
+    </style>
+  </head>
+
+  <body>
+    <div>
+      <label for="style">Collapser Style:</label>
+      <select id="style">
+        <option value="minimalist">Minimalist</option>
+        <option value="retro">Retro</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 10px">
+      <label for="collapseAnimation">Scroll Animation</label>
+      <input type="checkbox" id="collapseAnimation">
+    </div>
+
+    <button id="save" style="margin-top: 10px">Save</button>
+
+    <div id="status" style="margin-top: 10px"></div>
+
+    <script src="../js/options.js"></script>
+  </body>
+</html>
