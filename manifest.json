@@ -2,7 +2,7 @@
   "version": "5.1.1",
   "applications": {
     "gecko": {
-      "id": "redditcommentcollapser@tomjwatson.com",
+      "id": "{a5b2e636-07e5-4331-93c1-6cf4074356c8}",
       "strict_min_version": "42.0"
     }
   },
@@ -27,13 +27,13 @@
     "image/collapse.png",
     "image/collapse-dark.png",
     "image/expand.png",
-    "image/expand-dark.png"
+    "image/expand-dark.png",
+    "image/colours/*"
   ],
   "permissions": [
     "storage",
     "https://*.reddit.com/"
   ],
-  "web_accessible_resources": ["image/colours/*"],
   "options_ui": {
     "page": "views/options.html",
     "chrome_style": true
