@@ -12,9 +12,9 @@ Collapse a comment and all of it's replies by clicking on the column of the comm
 
 No longer get stuck in the middle of a huge comment chain - simply select the outermost column to collapse the whole top-level-comment.
 
-## ![Screenshot1](image/screenshot2.png)
+![Screenshot1](manifest-v3/image/screenshot2.png)
 
-![Screenshot2](image/screenshot1.png)
+![Screenshot2](manifest-v3/image/screenshot1.png)
 
 > [!NOTE]  
 > There are currently two separate versions of this extension - manifest V2 and manifest V3.
