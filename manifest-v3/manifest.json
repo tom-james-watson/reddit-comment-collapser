@@ -1,0 +1,39 @@
+{
+  "version": "6.0.0",
+  "manifest_version": 3,
+  "minimum_chrome_version": "88",
+  "name": "Reddit Comment Collapser",
+  "description": "A more elegant solution for collapsing reddit comment trees",
+  "icons": {
+    "48": "image/icon48.png",
+    "128": "image/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://old.reddit.com/*/comments/*",
+        "https://old.reddit.com/*/comments/*"
+      ],
+      "css": ["css/comment-collapser.css"],
+      "js": ["js/comment-collapser.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "image/collapse.png",
+        "image/collapse-dark.png",
+        "image/expand.png",
+        "image/expand-dark.png",
+        "image/colours/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "permissions": ["storage"],
+  "options_ui": {
+    "page": "views/options.html"
+  },
+  "host_permissions": ["https://old.reddit.com/"]
+}
