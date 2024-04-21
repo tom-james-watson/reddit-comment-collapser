@@ -1,5 +1,5 @@
 {
-  "version": "6.0.0",
+  "version": "6.0.1",
   "manifest_version": 3,
   "minimum_chrome_version": "88",
   "name": "Reddit Comment Collapser",
@@ -11,8 +11,8 @@
   "content_scripts": [
     {
       "matches": [
-        "http://old.reddit.com/*/comments/*",
-        "https://old.reddit.com/*/comments/*"
+        "http://*.reddit.com/*/comments/*",
+        "https://*.reddit.com/*/comments/*"
       ],
       "css": ["css/comment-collapser.css"],
       "js": ["js/comment-collapser.js"],
@@ -35,5 +35,5 @@
   "options_ui": {
     "page": "views/options.html"
   },
-  "host_permissions": ["https://old.reddit.com/"]
+  "host_permissions": ["https://*.reddit.com/"]
 }
