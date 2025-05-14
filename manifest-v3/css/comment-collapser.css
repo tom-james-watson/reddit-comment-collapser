@@ -26,6 +26,12 @@
   content: initial !important;
 }
 
+/* Fix to ensure sidebar links are still usable */
+:root body div.side {
+	position: relative;
+	z-index: 1;
+}
+
 /* Style */
 :root body div.sitetable div.comment .expand {
   all: initial !important;
@@ -44,7 +50,8 @@
   transition: initial !important;
 }
 
-:root body div.sitetable div.comment .expand:hover {
+:root body div.sitetable div.comment .expand:hover,
+:root body div.sitetable div.comment .expand:focus-visible {
   background-color: rgba(255, 255, 0, 0.3) !important;
   text-decoration: initial !important;
 }
@@ -85,7 +92,8 @@
   left: 0 !important;
 }
 
-:root body.rcc-retro div.sitetable div.comment .expand:hover:before {
+:root body.rcc-retro div.sitetable div.comment .expand:hover:before,
+:root body.rcc-retro div.sitetable div.comment .expand:focus-visible:before {
   opacity: 1 !important;
   text-decoration: initial !important;
 }
