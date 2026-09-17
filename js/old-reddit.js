@@ -1,3 +1,4 @@
+// Old Reddit uses .comment elements with .expand controls.
 function injectRetroTheme() {
   // Create URLs for local files without hardcoding chrome-extension URL scheme
   const styleEl = document.createElement("style");
@@ -69,9 +70,12 @@ function smoothScroll(destination) {
 
 window.addEventListener("click", function (ev) {
   // Only trigger for expando clicks
-  if (!ev.target.matches(".expand")) return;
+  if (!(ev.target instanceof Element) || !ev.target.matches(".expand")) return;
 
   let comment = ev.target.closest(".comment");
+
+  if (!comment) return;
+
   let rect = comment.getBoundingClientRect();
 
   chrome.storage.sync.get({
@@ -107,6 +111,8 @@ window.addEventListener("click", function (ev) {
 });
 
 document.addEventListener("DOMContentLoaded", function(event) {
+
+  if (!document.querySelector("div.sitetable")) return;
 
   chrome.storage.sync.get({
     style: 'minimalist'

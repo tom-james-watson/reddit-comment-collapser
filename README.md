@@ -1,26 +1,34 @@
 # Reddit Comment Collapser
 
+Reddit Comment Collapser makes it easier to get around long comment threads. It works on both old and new Reddit.
+
 [Chrome extension](https://chrome.google.com/webstore/detail/reddit-comment-collapser/njmimaecgocggclbecipdimilidimlpl)
 
 [Firefox addon](https://addons.mozilla.org/en-GB/firefox/addon/reddit_comment_collapser/)
 
----
+## Old Reddit
 
-Reddit Comment Collapser is a more elegant solution for collapsing reddit comment trees.
+Click the coloured line next to a comment to collapse it and all of its replies. You can also click one of the outer lines to collapse a parent comment without having to scroll back up and find it.
 
-Collapse a comment and all of it's replies by clicking on the column of the comment you wish to collapse.
+The collapsed comment stays at the top of the screen, so you don't lose your place.
 
-No longer get stuck in the middle of a huge comment chain - simply select the outermost column to collapse the whole top-level-comment.
+![Comment columns on old Reddit](image/screenshot2.png)
 
-![Screenshot1](image/screenshot2.png)
+![A collapsed comment on old Reddit](image/screenshot1.png)
 
-![Screenshot2](image/screenshot1.png)
+## New Reddit
 
-The extension now uses Manifest V3 only. The legacy Manifest V2 source is no longer maintained in this repository.
+New Reddit already has buttons for collapsing comments. However, if you collapse a large thread, you can end up much further down the page than you were before.
+
+Reddit Comment Collapser keeps the comment you collapsed on screen.
+
+## Options
+
+You can turn smooth scrolling on or off. On old Reddit, you can also choose how the comment lines look.
 
 ## Development
 
-Load this repository’s root directory as an unpacked extension. Run `make` to package it as `reddit-comment-collapser.zip`.
+Load the repository root as an unpacked extension. Run `make` to create `reddit-comment-collapser.zip`.
 
 ## Major Contributors
 

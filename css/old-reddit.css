@@ -1,3 +1,4 @@
+/* Old Reddit only */
 :root body div.sitetable div.comment {
   padding-left: 20px !important;
   position: relative !important;
@@ -21,8 +22,8 @@
   margin-left: 0px !important;
 }
 
-:root body .expand::before,
-:root body .expand::after {
+:root body div.sitetable div.comment .expand::before,
+:root body div.sitetable div.comment .expand::after {
   content: initial !important;
 }
 

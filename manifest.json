@@ -1,6 +1,11 @@
 {
-  "version": "6.0.1",
+  "version": "7.0.0",
   "manifest_version": 3,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{a5b2e636-07e5-4331-93c1-6cf4074356c8}"
+    }
+  },
   "minimum_chrome_version": "88",
   "name": "Reddit Comment Collapser",
   "description": "A more elegant solution for collapsing reddit comment trees",
@@ -11,11 +16,23 @@
   "content_scripts": [
     {
       "matches": [
-        "http://*.reddit.com/*/comments/*",
-        "https://*.reddit.com/*/comments/*"
+        "https://*.reddit.com/*"
       ],
-      "css": ["css/comment-collapser.css"],
-      "js": ["js/comment-collapser.js"],
+      "css": [
+        "css/old-reddit.css"
+      ],
+      "js": [
+        "js/old-reddit.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://*.reddit.com/*"
+      ],
+      "js": [
+        "js/new-reddit.js"
+      ],
       "run_at": "document_start"
     }
   ],
@@ -28,12 +45,18 @@
         "image/expand-dark.png",
         "image/colours/*"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "options_ui": {
     "page": "views/options.html"
   },
-  "host_permissions": ["https://*.reddit.com/"]
+  "host_permissions": [
+    "https://*.reddit.com/"
+  ]
 }
