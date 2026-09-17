@@ -1,5 +1,5 @@
 {
-  "version": "7.0.0",
+  "version": "7.0.1",
   "manifest_version": 3,
   "browser_specific_settings": {
     "gecko": {
@@ -8,7 +8,7 @@
   },
   "minimum_chrome_version": "88",
   "name": "Reddit Comment Collapser",
-  "description": "A more elegant solution for collapsing reddit comment trees",
+  "description": "An easier way to collapse and get around comment threads on old and new Reddit.",
   "icons": {
     "48": "image/icon48.png",
     "128": "image/icon128.png"
